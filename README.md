@@ -1,6 +1,8 @@
 # react-graph-tool-example
 
-A react app template.
+A react graph tool example (starting point).
+
+Tested with node version: v14.17.2
 
 ## Available Scripts
 

@@ -1,254 +1,276 @@
 const graphData = {
   "nodes": [
     {
-      "id": "0",
+      "id": 0,
       "group": 1,
       "properties": {
-        "name": "Andrew"
+        "id": 0,
+        "name": "Andy",
+        "gender": "male"
       },
-      "labels": [
-        "LoopMember"
-      ],
+      "labels": [],
       "position": {
-        "x": 800.4474932236285,
-        "y": 222.60540428109775
+        "x": 0,
+        "y": 0
       }
     },
     {
-      "id": "1",
+      "id": 1,
       "group": 1,
       "properties": {
-        "name": "Estella"
+        "id": 1,
+        "name": "Betty",
+        "gender": "female"
       },
-      "labels": [
-        "LoopMember"
-      ],
+      "labels": [],
       "position": {
-        "x": 323.6574123552059,
-        "y": 539.5455661768367
+        "x": 0,
+        "y": 0
       }
     },
     {
-      "id": "2",
+      "id": 2,
       "group": 1,
       "properties": {
-        "name": "Finlay"
+        "id": 2,
+        "name": "Cate",
+        "gender": "female"
       },
-      "labels": [
-        "LoopMember"
-      ],
+      "labels": [],
       "position": {
-        "x": 323.580322265625,
-        "y": 211.362060546875
+        "x": 0,
+        "y": 0
       }
     },
     {
-      "id": "3",
+      "id": 3,
       "group": 1,
       "properties": {
-        "name": "Alexis"
+        "id": 3,
+        "name": "Dave",
+        "gender": "male"
       },
-      "labels": [
-        "LoopMember"
-      ],
+      "labels": [],
       "position": {
-        "x": 912,
-        "y": 484
+        "x": 0,
+        "y": 0
       }
     },
     {
-      "id": "4",
+      "id": 4,
       "group": 1,
       "properties": {
-        "name": "sodium"
+        "id": 4,
+        "name": "Ellen",
+        "gender": "female"
       },
-      "labels": [
-        "Jibo"
-      ],
+      "labels": [],
       "position": {
-        "x": -197.8467140197754,
-        "y": 536.3764953613281
+        "x": 0,
+        "y": 0
       }
     },
     {
-      "id": "5",
+      "id": 5,
       "group": 1,
       "properties": {
-        "name": "loopRelationships",
-        "id": "001"
+        "id": 5,
+        "name": "Fiona",
+        "gender": "female"
       },
-      "labels": [
-        "Quest"
-      ],
+      "labels": [],
       "position": {
-        "x": 121.68312644958496,
-        "y": 120.05018615722656
+        "x": 0,
+        "y": 0
       }
     },
     {
-      "id": "6",
+      "id": 6,
       "group": 1,
       "properties": {
-        "name": "tellAJoke",
-        "id": "000"
+        "id": 6,
+        "name": "Garry",
+        "gender": "male"
       },
-      "labels": [
-        "Quest"
-      ],
+      "labels": [],
       "position": {
-        "x": -91.36740112304688,
-        "y": 306.60191345214844
+        "x": 0,
+        "y": 0
       }
     },
     {
-      "id": "7",
+      "id": 7,
       "group": 1,
-      "properties": {},
-      "labels": [
-        ""
-      ],
+      "properties": {
+        "id": 7,
+        "name": "Holly",
+        "gender": "female"
+      },
+      "labels": [],
       "position": {
-        "x": 506.21078759934653,
-        "y": 656.1441379541805
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": 8,
+      "group": 1,
+      "properties": {
+        "id": 8,
+        "name": "Iris",
+        "gender": "female"
+      },
+      "labels": [],
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": 9,
+      "group": 1,
+      "properties": {
+        "id": 9,
+        "name": "Jane",
+        "gender": "female"
+      },
+      "labels": [],
+      "position": {
+        "x": 0,
+        "y": 0
       }
     }
   ],
   "links": [
     {
-      "source": "1",
-      "target": "0",
-      "value": 1,
-      "id": "0",
+      "source": 0,
+      "target": 1,
+      "value": 0,
+      "id": 0,
       "type": "RELATIONSHIP",
-      "startNode": "1",
-      "endNode": "0",
+      "startNode": 0,
+      "endNode": 1,
       "properties": {
-        "state": "unknown",
-        "quest": "001"
+        "state": "unknown"
       },
-      "linknum": 1
+      "linknum": 0
     },
     {
-      "source": "2",
-      "target": "0",
-      "value": 1,
-      "id": "1",
+      "source": 1,
+      "target": 2,
+      "value": 0,
+      "id": 0,
       "type": "RELATIONSHIP",
-      "startNode": "2",
-      "endNode": "0",
+      "startNode": 1,
+      "endNode": 2,
       "properties": {
-        "state": "unknown",
-        "quest": "001"
+        "state": "unknown"
       },
-      "linknum": 1
+      "linknum": 0
     },
     {
-      "source": "0",
-      "target": "3",
-      "value": 1,
-      "id": "2",
+      "source": 2,
+      "target": 3,
+      "value": 0,
+      "id": 0,
       "type": "RELATIONSHIP",
-      "startNode": "0",
-      "endNode": "3",
+      "startNode": 2,
+      "endNode": 3,
       "properties": {
-        "state": "unknown",
-        "quest": "001"
+        "state": "unknown"
       },
-      "linknum": 1
+      "linknum": 0
     },
     {
-      "source": "3",
-      "target": "1",
-      "value": 1,
-      "id": "3",
+      "source": 3,
+      "target": 4,
+      "value": 0,
+      "id": 0,
       "type": "RELATIONSHIP",
-      "startNode": "3",
-      "endNode": "1",
+      "startNode": 3,
+      "endNode": 4,
       "properties": {
-        "state": "unknown",
-        "quest": "001"
+        "state": "unknown"
       },
-      "linknum": 1
+      "linknum": 0
     },
     {
-      "source": "2",
-      "target": "1",
-      "value": 1,
-      "id": "4",
+      "source": 4,
+      "target": 0,
+      "value": 0,
+      "id": 0,
       "type": "RELATIONSHIP",
-      "startNode": "2",
-      "endNode": "1",
+      "startNode": 4,
+      "endNode": 0,
       "properties": {
-        "state": "unknown",
-        "quest": "001"
+        "state": "unknown"
       },
-      "linknum": 1
+      "linknum": 0
     },
     {
-      "source": "2",
-      "target": "3",
-      "value": 1,
-      "id": "5",
+      "source": 0,
+      "target": 5,
+      "value": 0,
+      "id": 0,
       "type": "RELATIONSHIP",
-      "startNode": "2",
-      "endNode": "3",
+      "startNode": 0,
+      "endNode": 5,
       "properties": {
-        "state": "unknown",
-        "quest": "001"
+        "state": "unknown"
       },
-      "linknum": 1
+      "linknum": 0
     },
     {
-      "source": "4",
-      "target": "6",
-      "value": 1,
-      "id": "6",
-      "type": "QUEST",
-      "startNode": "4",
-      "endNode": "6",
+      "source": 1,
+      "target": 6,
+      "value": 0,
+      "id": 0,
+      "type": "RELATIONSHIP",
+      "startNode": 1,
+      "endNode": 6,
       "properties": {
-        "jibo": "sodium",
-        "state": "completed"
+        "state": "unknown"
       },
-      "linknum": 1
+      "linknum": 0
     },
     {
-      "source": "6",
-      "target": "5",
-      "value": 1,
-      "id": "7",
-      "type": "QUEST",
-      "startNode": "6",
-      "endNode": "5",
+      "source": 2,
+      "target": 7,
+      "value": 0,
+      "id": 0,
+      "type": "RELATIONSHIP",
+      "startNode": 2,
+      "endNode": 7,
       "properties": {
-        "jibo": "global",
-        "unlockedBy": "000"
+        "state": "unknown"
       },
-      "linknum": 1
+      "linknum": 0
     },
     {
-      "source": "4",
-      "target": "6",
-      "value": 1,
-      "id": "8",
-      "type": "QUEST",
-      "startNode": "4",
-      "endNode": "6",
+      "source": 3,
+      "target": 8,
+      "value": 0,
+      "id": 0,
+      "type": "RELATIONSHIP",
+      "startNode": 3,
+      "endNode": 8,
       "properties": {
-        "jibo": "global",
-        "unlockedBy": "000"
+        "state": "unknown"
       },
-      "linknum": 1
+      "linknum": 0
     },
     {
-      "source": "1",
-      "target": "7",
-      "value": 1,
-      "id": "9",
-      "startNode": "1",
-      "endNode": "7",
-      "properties": {},
-      "linknum": 1
+      "source": 4,
+      "target": 9,
+      "value": 0,
+      "id": 0,
+      "type": "RELATIONSHIP",
+      "startNode": 4,
+      "endNode": 9,
+      "properties": {
+        "state": "unknown"
+      },
+      "linknum": 0
     }
   ]
 }

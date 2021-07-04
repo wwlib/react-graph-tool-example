@@ -9,6 +9,7 @@ export interface AppProps {
 }
 
 export interface AppState {
+  graphData: any;
 }
 
 export default class App extends React.Component<AppProps, AppState> {
@@ -16,13 +17,31 @@ export default class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
+      graphData: this.props.appModel.data,
     }
   }
+
+  componentWillMount() {
+    this.props.appModel.addListener('tick', this.onTick);
+  }
+
+  componentWillUnmount() {
+    this.props.appModel.removeListener('tick', this.onTick);
+  }
+
+  onTick = () => {
+    console.log(`App: tick`);
+    this.setState({
+      graphData: this.props.appModel.data,
+    });
+  }
+
+  // 
 
   render() {
     return (
       <div className="App">
-        <D3Container width={1024} height={1024} appModel={this.props.appModel}/>
+        <D3Container width={1024} height={1024} appModel={this.props.appModel} graphData={this.state.graphData} />
         {/* <AnimatedCircles /> */}
       </div>
     );

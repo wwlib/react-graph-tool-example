@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import { v4 as uuidv4 } from 'uuid';
 
 const d3 = require('d3');
@@ -31,7 +32,7 @@ export type LinkData = {
     isTemporary?: boolean;
 }
 
-export default class Model {
+export default class Model extends EventEmitter {
 
     private _nodes: any[];
     private _links: any[];
@@ -40,6 +41,7 @@ export default class Model {
     private _nextLinkindex: number = 0;
 
     constructor() {
+        super();
         console.log(graphData);
         this._nodes = graphData.nodes;
         this._links = graphData.links;
@@ -57,7 +59,8 @@ export default class Model {
     }
 
     get data(): any {
-        return graphData;
+        //return graphData;
+        return { nodes: this._nodes, links: this._links }
     }
 
     updateNodeIndices() {
@@ -173,12 +176,22 @@ export default class Model {
             .force('center', d3.forceCenter(1024 / 2, 1024 / 2))
             .force("x", d3.forceX())
             .force("y", d3.forceY())
-            .stop()
-            .tick(300)
+            // .on('tick', this.ticked)
 
-        // this._simulation.on("end", () => {
-        //     console.log('forceGraphData: end');
-        //     console.log(this.nodes);
-        // });
+            // .on("end", () => {
+            //     console.log('forceGraphData: end');
+            //     console.log(this.nodes);
+            // })
+            .stop();
+
+        for (let i=0; i<100; i++) {
+            this._simulation.tick();
+        }
+        this.ticked();
+            
+    }
+
+    ticked = () => {
+        this.emit('tick');
     }
 }

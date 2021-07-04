@@ -58,8 +58,7 @@
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "@types/uuid": "^8.3.0",
-    "d3": "^6.2.0",
-    "d3-force": "^2.1.1",
+    "d3": "^4.12.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-spring": "^8.0.27",
@@ -72,8 +71,11 @@
     "env-cmd": "^10.1.0",
     "react-scripts": "4.0.0",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.3",
+    "typescript": "~4.0.5",
     "webpack-node-externals": "^2.5.2"
+  },
+  "save": {
+    "d3": "^6.2.0"
   },
   "repository": {
     "type": "git",

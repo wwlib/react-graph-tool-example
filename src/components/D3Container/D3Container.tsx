@@ -66,13 +66,13 @@ const getCoordinates = (event: any) => {
     return pointerCoordinates;
 }
 
-const D3Container = ({ width, height, appModel }) => {
+const D3Container = ({ width, height, appModel, graphData }) => {
     divWidth = width;
     divHeight = height;
     
 
     const [dataset, setDataset] = useState(
-        appModel.data
+        graphData
     );
     const [nodeSelectorData, setNodeSelectorData] = useState(null);
 
