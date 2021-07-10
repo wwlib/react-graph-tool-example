@@ -1,10 +1,13 @@
-import { useState } from 'react';
-// import useInterval from './useInterval';
-import Model from '../../model/Model';
+import { useState, useEffect } from 'react';
+import './BehaviorTreeContainer.css';
+import { PortType } from '../../model/AbstractData';
 import Node from './Node';
 import Link from './Link';
 import NodeSelector from './NodeSelector';
-import "./D3Container.css";
+import NodeDiv from './NodeDiv';
+import NodeUtils from './NodeUtils';
+import Model from '../../model/Model';
+
 
 export enum SelectorState {
     POINTING = 'pointing',
@@ -20,46 +23,6 @@ let enteredNodeData: any = null;
 let selectorState: SelectorState = SelectorState.POINTING;
 const pointerCoordinates: any = { x: 0, y: 0 };
 
-// const generateDataset = () => (
-//     Array(10).fill(0).map((value, i) => {
-//         return {
-//             id: i,
-//             x: Math.random() * 800 + 100,
-//             y: Math.random() * 350 + 100,
-//         }
-//     })
-// );
-
-// const onMouseEnter = (event) => {
-//     console.log(event);
-// }
-
-// const onMouseDown = (event) => {
-//     console.log(event);
-// }
-
-// const divToSvgCoords = (x: number, y: number, width: number, height: number): [number, number, number, number] => {
-//     let svgX: number = 0;
-//     let svgY: number = 0;
-//     let svgWidth: number = 0;
-//     let svgHeight: number = 0;
-
-//     svgX = x / divWidth * 100;
-//     svgY = y / divHeight * 100;
-//     svgWidth = width / divHeight * 100;
-//     svgHeight = height / divHeight * 100;
-
-//     return [svgX, svgY, svgWidth, svgHeight];
-// }
-
-// const getCoordinates = (event: any) => {
-//     const { top, left } = event.target.getBoundingClientRect();
-//     return {
-//         x: event.clientX - left,
-//         y: event.clientX - parseInt(top, 10),
-//     };
-// }
-
 const getCoordinates = (event: any) => {
     // const { top, left } = event.target.getBoundingClientRect();
     pointerCoordinates.x = event.clientX;
@@ -67,33 +30,32 @@ const getCoordinates = (event: any) => {
     return pointerCoordinates;
 }
 
-const D3Container = ({ width, height, appModel, graphData, changed }: { width: number, height: number, appModel: Model, graphData: any, changed: any }) => {
+const BehaviorTreeContainer = ({ width, height, appModel, graphData, changed }: { width: number, height: number, appModel: Model, graphData: any, changed: any }) => {
     divWidth = width;
     divHeight = height;
-    
+
 
     const [dataset, setDataset] = useState(
         graphData
     );
+    useEffect(() => { // re-render on graphData change
+        setDataset(graphData);
+    }, [graphData]);
+
     const [nodeSelectorData, setNodeSelectorData] = useState(null);
 
-    // console.log(dataset);
-
-    // useInterval(() => {
-    //     const newDataset = generateDataset()
-    //     setDataset(newDataset)
-    // }, 2000)
+    useEffect(() => {
+        setDataset(graphData);
+    }, [graphData]);
 
     const onDivMouseMove = (event) => {
         const newCoordinates = getCoordinates(event);
-        // console.log(`onDivMouseMove: state: ${selectorState}`);
         if (selectorState === SelectorState.POINTING) {
 
         } else if (selectorState === SelectorState.SELECTED) {
             selectorState = SelectorState.DRAGGING;
         } if ((selectorState === SelectorState.DRAGGING || selectorState === SelectorState.DRAGGING_NEW_NODE) && nodeSelectorData) {
-            // console.log(newCoordinates);
-            // update the graph dataset here - note: vis a side effect that react won't see
+            // update the graph dataset here - note: is a side effect that react won't see
             if (activeNodeData) {
                 activeNodeData.x = newCoordinates.x;
                 activeNodeData.y = newCoordinates.y;
@@ -102,35 +64,46 @@ const D3Container = ({ width, height, appModel, graphData, changed }: { width: n
             setNodeSelectorData({
                 x: newCoordinates.x,
                 y: newCoordinates.y,
+                port: nodeSelectorData.port,
                 nodeData: activeNodeData || enteredNodeData,
             });
         }
     }
 
     const onDivMouseUp = (event) => {
-        console.log(`onDivMouseUp:`, selectorState);
-        // setNodeSelectorData(null);
-        // setDataset(dataset);
+        // console.log(`onDivMouseUp:`, selectorState);
         if (selectorState === SelectorState.DRAGGING || selectorState === SelectorState.DRAGGING_NEW_NODE) {
             selectorState = SelectorState.POINTING;
             appModel.data.keepTemporaryNodesAndLinks();
+            appModel.data.onStopDraggingNode(activeNodeData);
             // force re-render
             setNodeSelectorData({
                 x: activeNodeData.x,
                 y: activeNodeData.y,
+                port: nodeSelectorData.port,
                 nodeData: activeNodeData,
             });
         }
     }
 
-    const onNodeMouseEvent = (type, data) => {
-        console.log(`onNodeMouseEvent:`, type, data);
+    const setActiveNode = (nodeData: any) => {
+        if (activeNodeData) {
+            activeNodeData.state = '';
+        }
+        activeNodeData = nodeData;
+        activeNodeData.state = 'SELECTED';
+    }
+
+    const onNodeMouseEvent = (type, port: PortType, data) => {
+        // console.log(`onNodeMouseEvent:`, type, portData, data);
+        const portCoords = NodeUtils.getPortCoords(port, { x: data.x, y: data.y })
         switch (type) {
             case 'enter':
                 if (selectorState !== SelectorState.DRAGGING && selectorState !== SelectorState.DRAGGING_NEW_NODE) {
                     setNodeSelectorData({
-                        x: data.x,
-                        y: data.y,
+                        x: portCoords.x,
+                        y: portCoords.y,
+                        port: port,
                         nodeData: data,
                     });
                     enteredNodeData = data;
@@ -138,33 +111,34 @@ const D3Container = ({ width, height, appModel, graphData, changed }: { width: n
                 } else if (selectorState === SelectorState.DRAGGING_NEW_NODE && !data.isTemporary) {
                     appModel.data.linkNodes(enteredNodeData, data);
                     appModel.data.deleteTemporaryNodesAndLinks();
-                    setDataset(appModel.data.nodesAndLinks);
+                    setDataset(appModel.data);
                     enteredNodeData = data;
                     selectorState = SelectorState.POINTING;
-                    activeNodeData = data;
+                    setActiveNode(data);
                     setNodeSelectorData({
-                        x: data.x,
-                        y: data.y,
+                        x: portCoords.x,
+                        y: portCoords.y,
+                        port: port,
                         nodeData: data,
                     });
                 }
                 break;
             case 'down':
                 setNodeSelectorData({
-                    x: data.x,
-                    y: data.y,
+                    x: portCoords.x,
+                    y: portCoords.y,
+                    port: port,
                     nodeData: data,
                 });
-                activeNodeData = data;
+                setActiveNode(data);
                 selectorState = SelectorState.SELECTED;
+                changed('nodeSelected', activeNodeData);
                 break;
             case 'up':
-                // setNodeSelectorData(null);
                 selectorState = SelectorState.POINTING;
-                // setDataset(dataset);
                 break;
             case 'out':
-                // if (selectorState != SelectorState.DRAGGING) {
+                // if (selectorState !== SelectorState.DRAGGING) {
                 //     setNodeSelectorData(null);
                 //     // setDataset(dataset);
                 //     selectorState = SelectorState.POINTING;
@@ -174,27 +148,36 @@ const D3Container = ({ width, height, appModel, graphData, changed }: { width: n
     }
 
     const onLinkMouseEvent = (type, data) => {
-        console.log(`onLinkMouseEvent:`, type, data);
+        // console.log(`onLinkMouseEvent:`, type, data);
     }
 
     const onNodeSelectorMouseEvent = (type, data) => {
-        console.log(`onNodeSelectorMouseEvent:`, type, data);
+        console.log(`onNodeSelectorMouseEvent:`, type, nodeSelectorData.port, data);
         switch (type) {
             case 'down':
-                const newNodeData = appModel.data.addNode(pointerCoordinates, data.nodeData, true);
-                setNodeSelectorData({
-                    x: newNodeData.x,
-                    y: newNodeData.y,
-                    nodeData: newNodeData,
-                });
-                activeNodeData = newNodeData; //newNodeData;
-                selectorState = SelectorState.DRAGGING_NEW_NODE;
+                const newNodeData = appModel.data.addNode(pointerCoordinates, data.nodeData, nodeSelectorData.port, true);
+                if (newNodeData) {
+                    setNodeSelectorData({
+                        x: newNodeData.x,
+                        y: newNodeData.y,
+                        port: nodeSelectorData.port,
+                        nodeData: newNodeData,
+                    });
+                    setActiveNode(newNodeData);
+                    // setDataset(appModel.data);
+                    // console.log(appModel.data);
+                    selectorState = SelectorState.DRAGGING_NEW_NODE;
+                }
                 break;
         }
     }
 
+    const onTempBoxMouseDownEvent = (e) => {
+        console.log(JSON.stringify((appModel as Model).data.getFileData(), null, 2));
+    }
+
     const rectCoords: [number, number, number, number] = [140, 140, 40, 40]; //divToSvgCoords(140, 140, 40, 40);
-    // console.log(nodeSelectorData);
+
     return (
 
         <div id='graphContainer' style={{ width: divWidth, height: divHeight }} onMouseMove={onDivMouseMove} onMouseUp={onDivMouseUp} >
@@ -208,9 +191,12 @@ const D3Container = ({ width, height, appModel, graphData, changed }: { width: n
                 <rect x={rectCoords[0]} y={rectCoords[1]} width={rectCoords[2]} height={rectCoords[3]} />
                 <NodeSelector data={nodeSelectorData} onMouseEvent={onNodeSelectorMouseEvent} />
             </svg>
-            <div id='tempBox'></div>
+            <div id='tempBox' onMouseDown={onTempBoxMouseDownEvent}></div>
+            {dataset.nodes.map((nodeData, i) => (
+                <NodeDiv key={i} data={nodeData} appModel={appModel} onMouseEvent={onNodeMouseEvent} />
+            ))}
         </div>
     )
 }
 
-export default D3Container
+export default BehaviorTreeContainer

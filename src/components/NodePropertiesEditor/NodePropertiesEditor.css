@@ -1,0 +1,50 @@
+.NodePropertiesEditor {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+}
+
+.NodePropertiesEditor textarea {
+    width: 100%;
+    resize: vertical;
+    color: greenyellow;
+    background-color: #282c34;
+}
+
+.Decorators{
+    display: flex;
+    flex-direction: column;
+}
+
+.DecoratorRow {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    color: #357ebd;
+    background-color: dimgrey;
+    box-sizing: border-box;
+    border-radius: 6px;
+    padding: 6px;
+    margin: 3px;
+}
+
+.Decorator {
+    width: 100%;
+    color: lightgray;
+    background-color: dodgerblue;
+    box-sizing: border-box;
+    border-radius: 6px;
+    padding: 6px;
+    margin: 3px;
+}
+
+.DecoratorButton {
+    width: 40px;
+    color: #357ebd;
+    background-color: #282c34;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border-width: 0px;
+    padding: 6px;
+    margin: 3px;
+}
