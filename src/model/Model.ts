@@ -3,14 +3,9 @@ import AbstractData from './AbstractData';
 import BehaviorTreeData from './BehaviorTreeData';
 import GraphData from './GraphData';
 
-let graphFileData = require('./data.js').default;
-let graphData = new GraphData();
-graphData.fileData = graphFileData;
-
-let btFileData = require('./idle-example.bt.js').default;
-let behaviorTreeData = new BehaviorTreeData();
-// behaviorTreeData.load(path.resolve(__dirname, './idle-example.bt.json'));
-behaviorTreeData.fileData = btFileData;
+// let graphFileData = require('./data.js').default;
+// let graphData = new GraphData();
+// graphData.fileData = graphFileData;
 
 export default class Model extends EventEmitter {
 
@@ -18,12 +13,27 @@ export default class Model extends EventEmitter {
 
     constructor() {
         super();
-        this._data = behaviorTreeData; //graphData;
-        console.log(this._data);
-        this._data.autoLayout();
+        this._data = this.newBehaviorTreeData();
     }
 
     get data(): AbstractData {
         return this._data;
+    }
+
+    loadBehaviorTreeData(filePath: string): BehaviorTreeData {
+        const behaviorTreeData = new BehaviorTreeData();
+        behaviorTreeData.load(filePath);
+        this._data = behaviorTreeData;
+        this._data.autoLayout();
+        console.log(this._data);
+        return behaviorTreeData;
+    }
+
+    newBehaviorTreeData(): BehaviorTreeData {
+        const behaviorTreeData = new BehaviorTreeData();
+        this._data = behaviorTreeData;
+        this._data.autoLayout();
+        console.log(this._data);
+        return behaviorTreeData;
     }
 }

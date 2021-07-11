@@ -48,3 +48,24 @@
     padding: 6px;
     margin: 3px;
 }
+
+.RunPanel {
+    width: 100%;
+    color: lightgray;
+    background-color: #282c34;
+    box-sizing: border-box;
+    border-radius: 6px;
+    padding: 6px;
+    margin: 3px;
+}
+
+.RunPanelButton {
+    /* width: 40px; */
+    color: lightgrey;
+    background-color: dodgerblue;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border-width: 0px;
+    padding: 6px;
+    margin: 3px;
+}

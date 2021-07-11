@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
+import jsonfile from 'jsonfile';
 import AbstractData, { NodeData, LinkData, PortType } from './AbstractData';
 
+const defaultBtFileData = require('./idle-example.bt.js').default;
 
 export default class BehaviorTreeData extends AbstractData {
 
@@ -9,6 +11,51 @@ export default class BehaviorTreeData extends AbstractData {
 
     constructor() {
         super();
+        this.init();
+        if (process.env.REACT_APP_MODE === 'web') {
+            this._nodeMap = {};
+            this._decoratorMap = {};
+            this._nodes = [];
+            this._links = [];
+            this.fileData = defaultBtFileData;
+        }
+    }
+
+    init() {
+        const newId = uuidv4();
+        const nodeClass = 'Parallel';
+        const btNode = {
+            id: newId,
+            class: 'nodeClass',
+            name: `${newId.substring(0, 3)}: ${nodeClass}`,
+            "asset-pack": "core",
+            // parent: '',
+            children: [
+            ],
+            decorators: [
+            ],
+            options: {},
+            position: {
+                x: 493,
+                y: 157
+            }
+        }
+        const initData: any = {};
+        initData[newId] = btNode;
+        this.fileData = initData;
+    }
+
+    load(filePath: string) {
+        this._nodeMap = {};
+        this._decoratorMap = {};
+        this._nodes = [];
+        this._links = [];
+        if (process.env.REACT_APP_MODE === 'electron') {
+            this._fileData = jsonfile.readFileSync(filePath);
+        }
+        this._filePath = filePath;
+        this.processFileData();
+        // super.load(filePath);
     }
 
     processFileData(): any {
@@ -134,7 +181,7 @@ export default class BehaviorTreeData extends AbstractData {
                     sourceBtNode.children.push(newId);
                 } else {
                     sourceBtNode.children = [newId];
-                }                
+                }
             }
         } else {
             console.log(`BehaviorTreeData: createBtNode: ERROR: no sourceBtNode.`);

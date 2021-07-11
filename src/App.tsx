@@ -3,10 +3,14 @@ import "./App.css";
 import D3Container from './components/D3Container/D3Container';
 import BehaviorTreeContainer from './components/BehaviorTreeContainer/BehaviorTreeContainer';
 import NodePropertiesEditor from "./components/NodePropertiesEditor/NodePropertiesEditor";
-
-// import { AnimatedCircles } from './components/D3Container/AnimatedCircles';
 import Model from './model/Model';
 
+let ipcRenderer;
+if (process.env.REACT_APP_MODE === 'electron') {
+  // Add the ipcRenderer to receive messages from the Main
+  ipcRenderer = require('electron').ipcRenderer;
+  console.log(`App: running in electron mode.`, ipcRenderer);
+}
 export interface AppProps {
   appModel: Model;
 }
@@ -25,6 +29,57 @@ export default class App extends React.Component<AppProps, AppState> {
     this.state = {
       graphData: this.props.appModel.data.nodesAndLinks,
       selectedNodeData: undefined,
+    }
+
+    if (ipcRenderer) {
+      console.log(`App: setting up ipcRenderer listeners.`);
+      ipcRenderer.on('onSetProjectRoot', (event: any, data: any) => {
+        console.log(`App: onSetProjectRoot:`, data);
+        // const projectRoot: string = data.directory;
+        // console.log(`App: new root: ${projectRoot}`);
+        // runtime.registerProjectPath(projectRoot);
+        // this.state.flowModel.projectRoot = projectRoot;
+
+        // // interaction-flow-engine: set project root
+        // Runtime.instance.setRoot(projectRoot);
+
+        // this.setState({
+        //   projectRoot: projectRoot,
+        // });
+      });
+
+      ipcRenderer.on('onNewGraph', (event: any, data: any) => {
+        console.log(`App: onNewGraph:`, data);
+        // 'onNewFlow', { filePath: newFile }
+        // FlowModel.createNewFile(data.filePath);
+        // const newFlowModel: FlowModel = new FlowModel(data.filePath, projectRoot);
+        // this.setState({
+        //   flowModel: newFlowModel,
+        // });
+      });
+
+      ipcRenderer.on('onOpenGraph', (event: any, data: any) => {
+        console.log(`App: onOpenGraph:`, data);
+         const filePath = data.files.filePaths[0];
+        // 'onOpenGraph', { files: { cancelled: false, filePaths: [''] } }
+        console.log(`App: onOpenGraph: filePath`, filePath);
+        this.props.appModel.loadBehaviorTreeData(filePath);
+        this.setState({
+          graphData: this.props.appModel.data.nodesAndLinks,
+          selectedNodeData: undefined,
+        });
+      });
+
+      ipcRenderer.on('onSaveGraph', (event: any, data: any) => {
+        console.log(`App: onSaveGraph:`, data);
+        this.props.appModel.data.saveToFile();
+      });
+
+      ipcRenderer.on('onSaveAsGraph', (event: any, data: any) => {
+        console.log(`App: onSaveAsGraph:`, data);
+        // { filePath: { cancelled: false, filePath: '' } }
+        this.props.appModel.data.saveToFile(data.filePath.filePath);
+      });
     }
   }
 

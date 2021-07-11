@@ -4,6 +4,7 @@ import Model from '../../model/Model';
 import BehaviorTreeData from '../../model/BehaviorTreeData'
 import Decorators from './Decorators';
 import DecoratorPropertiesEditor from './DecoratorPropertiesEditor';
+import RunPanel from './RunPanel';
 
 export interface NodePropertiesEditorProps {
     data: any;
@@ -92,6 +93,15 @@ export default class NodePropertiesEditor extends Component<NodePropertiesEditor
         this.props.changed(action, data);
     }
 
+    onRunPanelChanged = (action, data) => {
+        // this.props.changed(action, data);
+    }
+
+    onRunPanelMouseEvent = (action, data) => {
+        console.log(`onRunPanelMouseEvent`, action, data);
+        // this.props.changed(action, data);
+    }
+
     render() {
         return (
             <div className={'NodePropertiesEditor'}>
@@ -105,6 +115,7 @@ export default class NodePropertiesEditor extends Component<NodePropertiesEditor
                     onMouseEvent={this.onDecoratorMouseEvent}
                 />
                 <DecoratorPropertiesEditor data={this.state.decoratorData} appModel={this.props.appModel} changed={this.onDecoratorChanged} />
+                <RunPanel data={{}} appModel={this.props.appModel} changed={this.onRunPanelChanged} onMouseEvent={this.onRunPanelMouseEvent} />
             </div>
         )
     }

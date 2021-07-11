@@ -3,7 +3,10 @@ const electron = require('electron');
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
+// Module to create a custom Menu
 const Menu = electron.Menu;
+// Module to handle the dialogs of clicks on the Menu
+const dialog = electron.dialog;
 
 // const ipcMain = electron.ipcMain;
 
@@ -25,16 +28,52 @@ let menuTemplate = [
         ]
     },
     {
-    label: "Edit",
-    submenu: [
-        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-        { type: "separator" },
-        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
-    ]},
+        label: 'File',
+        submenu: [
+            {
+                label: "New Graph...",
+                accelerator: 'Command+N',
+                click: onMenuNewGraph,
+            },
+            {
+                label: "Open Graph...",
+                accelerator: 'Command+O',
+                click: onMenuOpenGraph
+            },
+            {
+                label: "Save Graph...",
+                accelerator: 'Command+S',
+                click: onMenuSaveGraph
+            },
+            {
+                label: "Save Graph As...",
+                accelerator: 'Command+Shift+S',
+                click: onMenuSaveAsGraph
+            },
+            {
+                type: "separator"
+            },
+            {
+                label: "Set Project Root...",
+                click: onMenuSetProjectRoot
+            },
+            {
+                type: "separator"
+            }
+        ]
+    },
+    {
+        label: "Edit",
+        submenu: [
+            { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+            { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+            { type: "separator" },
+            { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+            { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+            { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+            { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+        ]
+    },
     {
         label: 'View',
         submenu: [
@@ -56,11 +95,85 @@ let menuTemplate = [
     }
 ];
 
+let defaultProjectPath = './test-project';
+
+const setProjectRootOptions = {
+    defaultPath: defaultProjectPath,
+    properties: ['createDirectory', 'openDirectory'],
+    filters: []
+}
+
+const newGraphOptions = {
+    defaultPath: defaultProjectPath,
+    properties: ['createDirectory', 'promptToCreate'],
+    filters: [{ name: "Graphs", extensions: ["bt", "json"] }]
+}
+
+const saveAsGraphOptions = {
+    defaultPath: defaultProjectPath,
+    properties: ['createDirectory'],
+    filters: [{ name: "Graphs", extensions: ["bt", "json"] }]
+}
+
+const openGraphOptions = {
+    defaultPath: defaultProjectPath,
+    properties: ['openFile'],
+    filters: [{ name: "Graphs", extensions: ["bt", "json"] }]
+}
+
+updateDefaultProjectPath = (defaultProjectPath) => {
+    setProjectRootOptions.defaultPath = defaultProjectPath;
+    newGraphOptions.defaultPath = defaultProjectPath;
+    saveAsGraphOptions.defaultPath = defaultProjectPath;
+    openGraphOptions.defaultPath = defaultProjectPath;
+}
+
+// Handles the 'Set Project Root' menu option
+async function onMenuSetProjectRoot() {
+    let directoryData = await dialog.showOpenDialog(setProjectRootOptions);
+    // Send the event to the renderer
+    console.log(directoryData);
+    defaultProjectPath = directoryData.filePaths[0];
+    console.log(`electron.js: defaultProjectPath:`, defaultProjectPath);
+    if (defaultProjectPath) {
+        updateDefaultProjectPath(defaultProjectPath);
+        mainWindow.webContents.send('onSetProjectRoot', { directory: defaultProjectPath });
+    }
+}
+
+// Handles the 'Open Graph' menu option
+async function onMenuOpenGraph() {
+    let files = await dialog.showOpenDialog(openGraphOptions);
+    // let data = fs.readFileSync(files.filePaths[0], 'utf-8');
+    // Send the event to the renderer - let it parse the JSON
+    mainWindow.webContents.send('onOpenGraph', { files: files });
+}
+
+// Handles the 'New Graph' menu option
+async function onMenuNewGraph() {
+    let newFile = await dialog.showSaveDialog(newGraphOptions);
+    // Send the event to the renderer
+    mainWindow.webContents.send('onNewGraph', { filePath: newFile });
+}
+
+// Handles the 'Save Graph' menu option
+async function onMenuSaveGraph() {
+    // let newFile = await dialog.showSaveDialog(saveGraphOptions);
+    // Send the event to the renderer
+    mainWindow.webContents.send('onSaveGraph', { filePath: '' });
+}
+
+// Handles the 'Save Graph' menu option
+async function onMenuSaveAsGraph() {
+    let newFile = await dialog.showSaveDialog(saveAsGraphOptions);
+    // Send the event to the renderer
+    mainWindow.webContents.send('onSaveAsGraph', { filePath: newFile });
+}
 
 function createWindow() {
     // Create the browser window.
     Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
-    mainWindow = new BrowserWindow({width: 1200, height: 780, webPreferences: { nodeIntegration: true }});
+    mainWindow = new BrowserWindow({ width: 1432, height: 1000, webPreferences: { nodeIntegration: true, enableRemoteModule: true } });
 
     // and load the index.html of the app.
     // console.log(__dirname);

@@ -1,3 +1,4 @@
+import jsonfile from 'jsonfile';
 import { EventEmitter } from 'events';
 
 export type NodeData = {
@@ -37,6 +38,7 @@ export enum PortType { // connection port for links
 export default abstract class AbstractData extends EventEmitter {
 
     protected _fileData: any = {};
+    protected _filePath: string = '';
     protected _rootNode: any;
     protected _nodes: any[] = [];
     protected _links: any[] = [];
@@ -74,8 +76,18 @@ export default abstract class AbstractData extends EventEmitter {
     }
 
     load(filePath: string) {
-        this._fileData = require(filePath); //jsonfile.readFileSync(filePath);
+        this._nodes = [];
+        this._links = [];
+        this._fileData = jsonfile.readFileSync(filePath);
+        this._filePath = filePath;
         this.processFileData();
+    }
+
+    saveToFile(filePath?: string) {
+        if (filePath || this._filePath) {
+            const fileData = this.getFileData();
+            jsonfile.writeFileSync(filePath || this._filePath, fileData, { spaces: 2 });
+        }
     }
 
     // Abstract methods
