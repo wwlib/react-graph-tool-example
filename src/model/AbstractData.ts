@@ -55,10 +55,6 @@ export default abstract class AbstractData extends EventEmitter {
         return this._filePath;
     }
 
-    set filePath(path: string) {
-        this._filePath = path;
-    }
-
     get rootNode(): any {
         return this._rootNode;
     }

@@ -21,18 +21,11 @@ export default class BehaviorTreeData extends AbstractData {
 
     constructor() {
         super();
-        this.init('untitled.bt');
-        if (process.env.REACT_APP_MODE === 'web') {
-            this._nodeMap = {};
-            this._decoratorMap = {};
-            this._nodes = [];
-            this._links = [];
-            this._fileData = defaultBtFileData;
-        }
+        this.init();
     }
 
     init(filePath?: string) {
-        this.filePath = filePath || 'untitled.bt';
+        this._filePath = filePath || 'untitled.bt';
         this._nodeMap = {};
         this._decoratorMap = {};
         this._nodes = [];
@@ -58,7 +51,9 @@ export default class BehaviorTreeData extends AbstractData {
         const initData: any = {};
         initData[newId] = btNode;
         this._fileData = initData;
-        console.log(this.fileData)
+        if (process.env.REACT_APP_MODE === 'web') {
+            this._fileData = defaultBtFileData;
+        }
         this.processFileData();
     }
 

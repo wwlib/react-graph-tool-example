@@ -37,19 +37,23 @@ export default class RunPanel extends Component<RunPanelProps, RunPanelState> {
     }
 
     onMouseDown = (action: string, data?: any) => {
-        switch (action) {
-            case 'run':
-                // this.props.onMouseEvent('run', data);
-                BehaviorTreeEngineManager.Instance().run();
-                break;
-            case 'step':
-                // this.props.onMouseEvent('step', data);
-                BehaviorTreeEngineManager.Instance().step();
-                break;
-            case 'cancelRun':
-                // this.props.onMouseEvent('cancelRun', data);
-                BehaviorTreeEngineManager.Instance().cancel();
-                break;
+        if (process.env.REACT_APP_MODE === 'electron') {
+            switch (action) {
+                case 'run':
+                    // this.props.onMouseEvent('run', data);
+                    BehaviorTreeEngineManager.Instance().run();
+                    break;
+                case 'step':
+                    // this.props.onMouseEvent('step', data);
+                    BehaviorTreeEngineManager.Instance().step();
+                    break;
+                case 'cancelRun':
+                    // this.props.onMouseEvent('cancelRun', data);
+                    BehaviorTreeEngineManager.Instance().cancel();
+                    break;
+            }
+        } else {
+            console.log(`Behavior Trees can only be run in the electron version.`)
         }
     }
 
