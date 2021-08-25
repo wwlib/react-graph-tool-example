@@ -49,36 +49,44 @@ export default class App extends React.Component<AppProps, AppState> {
       });
 
       ipcRenderer.on('onNewGraph', (event: any, data: any) => {
+        // { filePath: { canceled: false, filePath: '' } }
         console.log(`App: onNewGraph:`, data);
-        // 'onNewFlow', { filePath: newFile }
-        // FlowModel.createNewFile(data.filePath);
-        // const newFlowModel: FlowModel = new FlowModel(data.filePath, projectRoot);
-        // this.setState({
-        //   flowModel: newFlowModel,
-        // });
+        if (!data.filePath.canceled) {
+          this.props.appModel.data.init(data.filePath.filePath);
+          this.props.appModel.data.saveToFile();
+          this.setState({
+            graphData: this.props.appModel.data.nodesAndLinks,
+            selectedNodeData: undefined,
+          });
+        }
       });
 
       ipcRenderer.on('onOpenGraph', (event: any, data: any) => {
         console.log(`App: onOpenGraph:`, data);
-         const filePath = data.files.filePaths[0];
-        // 'onOpenGraph', { files: { cancelled: false, filePaths: [''] } }
+        const filePath = data.files.filePaths[0];
+        // 'onOpenGraph', { files: { canceled: false, filePaths: [''] } }
         console.log(`App: onOpenGraph: filePath`, filePath);
-        this.props.appModel.loadBehaviorTreeData(filePath);
-        this.setState({
-          graphData: this.props.appModel.data.nodesAndLinks,
-          selectedNodeData: undefined,
-        });
+        if (!data.files.canceled) {
+          this.props.appModel.loadBehaviorTreeData(filePath);
+          this.setState({
+            graphData: this.props.appModel.data.nodesAndLinks,
+            selectedNodeData: undefined,
+          });
+        }
       });
 
       ipcRenderer.on('onSaveGraph', (event: any, data: any) => {
         console.log(`App: onSaveGraph:`, data);
+        // { filePath: '' }
         this.props.appModel.data.saveToFile();
       });
 
       ipcRenderer.on('onSaveAsGraph', (event: any, data: any) => {
         console.log(`App: onSaveAsGraph:`, data);
-        // { filePath: { cancelled: false, filePath: '' } }
-        this.props.appModel.data.saveToFile(data.filePath.filePath);
+        // { filePath: { canceled: false, filePath: '' } }
+        if (!data.filePath.canceled) {
+          this.props.appModel.data.saveToFile(data.filePath.filePath);
+        }
       });
     }
   }
@@ -105,7 +113,6 @@ export default class App extends React.Component<AppProps, AppState> {
   }
 
   onTick = () => {
-    console.log(`App: tick`);
     this.setState({
       graphData: this.props.appModel.data.nodesAndLinks,
     });

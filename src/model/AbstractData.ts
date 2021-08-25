@@ -6,7 +6,7 @@ export type NodeData = {
     group: number;
     properties: any;
     labels: string[],
-    position: {
+    layout: {
         x: number;
         y: number;
     };
@@ -38,7 +38,7 @@ export enum PortType { // connection port for links
 export default abstract class AbstractData extends EventEmitter {
 
     protected _fileData: any = {};
-    protected _filePath: string = '';
+    protected _filePath: string = 'untitled.json';
     protected _rootNode: any;
     protected _nodes: any[] = [];
     protected _links: any[] = [];
@@ -51,9 +51,12 @@ export default abstract class AbstractData extends EventEmitter {
         return this._fileData;
     }
 
-    set fileData(data: any) {
-        this._fileData = data;
-        this.processFileData();
+    get filePath(): string {
+        return this._filePath;
+    }
+
+    set filePath(path: string) {
+        this._filePath = path;
     }
 
     get rootNode(): any {
@@ -92,6 +95,8 @@ export default abstract class AbstractData extends EventEmitter {
 
     // Abstract methods
 
+    abstract init(filePath: string): void;
+    
     abstract processFileData(): any;
 
     abstract getFileData(): any;

@@ -1,0 +1,308 @@
+{
+  "meta": {
+    "version": 1
+  },
+  "5c663278-10f2-4257-ae2b-27c85bb1a80b": {
+    "id": "5c663278-10f2-4257-ae2b-27c85bb1a80b",
+    "class": "Sequence",
+    "name": "Root",
+    "assetPack": "core",
+    "options": {
+      "name": "Root"
+    },
+    "layout": {
+      "x": 410,
+      "y": 70
+    },
+    "decorators": [],
+    "children": [
+      "a21b7208-c19d-4db6-87df-f2a3e6a36087",
+      "d3b2ccc1-bd6f-450b-a8fe-d62b5de8a368"
+    ]
+  },
+  "a21b7208-c19d-4db6-87df-f2a3e6a36087": {
+    "id": "a21b7208-c19d-4db6-87df-f2a3e6a36087",
+    "class": "ExecuteScript",
+    "name": "Init",
+    "assetPack": "core",
+    "options": {
+      "name": "Init",
+      "exec": [
+        "() => {",
+        "          this.notepad.vCooldownTime = 100;",
+        "          this.notepad.hCooldownTime = 100;",
+        "          console.log('Init.', this.blackboard, this.notepad, this.result);",
+        "        }"
+      ]
+    },
+    "layout": {
+      "x": 318,
+      "y": 218
+    },
+    "parent": "5c663278-10f2-4257-ae2b-27c85bb1a80b",
+    "decorators": []
+  },
+  "d3b2ccc1-bd6f-450b-a8fe-d62b5de8a368": {
+    "id": "d3b2ccc1-bd6f-450b-a8fe-d62b5de8a368",
+    "class": "Parallel",
+    "name": "Flight",
+    "assetPack": "core",
+    "options": {
+      "name": "Flight",
+      "succeedOnOne": false
+    },
+    "layout": {
+      "x": 510,
+      "y": 219
+    },
+    "parent": "5c663278-10f2-4257-ae2b-27c85bb1a80b",
+    "decorators": [
+      "1eb4d866-2672-4806-9b8d-d0e34ccd0833"
+    ],
+    "children": [
+      "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c",
+      "db6ebc20-f277-4f62-8ea5-5bf7340ac756"
+    ]
+  },
+  "1eb4d866-2672-4806-9b8d-d0e34ccd0833": {
+    "id": "1eb4d866-2672-4806-9b8d-d0e34ccd0833",
+    "class": "WhileCondition",
+    "name": "FlightLoop",
+    "assetPack": "core",
+    "options": {
+      "name": "FlightLoop",
+      "init": [
+        "() => {}"
+      ],
+      "conditional": [
+        "() => {",
+        "          return true;",
+        "        }"
+      ]
+    }
+  },
+  "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c": {
+    "id": "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c",
+    "class": "Sequence",
+    "name": "Vertical",
+    "assetPack": "core",
+    "options": {
+      "name": "Vertical"
+    },
+    "layout": {
+      "x": 312,
+      "y": 384
+    },
+    "parent": "d3b2ccc1-bd6f-450b-a8fe-d62b5de8a368",
+    "decorators": [],
+    "children": [
+      "99d8fe74-b456-4ef0-9054-cfc9c88e3be3",
+      "ac0168f1-a455-4377-8d79-ef42b45e02cc",
+      "4dbd2b2a-21ee-47d6-93c6-3b457e8d5337"
+    ]
+  },
+  "99d8fe74-b456-4ef0-9054-cfc9c88e3be3": {
+    "id": "99d8fe74-b456-4ef0-9054-cfc9c88e3be3",
+    "class": "TimeoutJs",
+    "name": "VCooldown",
+    "assetPack": "core",
+    "options": {
+      "name": "VCooldown",
+      "getTime": [
+        "() => this.notepad.vCooldownTime"
+      ]
+    },
+    "layout": {
+      "x": 88,
+      "y": 549
+    },
+    "parent": "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c",
+    "decorators": []
+  },
+  "ac0168f1-a455-4377-8d79-ef42b45e02cc": {
+    "id": "ac0168f1-a455-4377-8d79-ef42b45e02cc",
+    "class": "ExecuteScript",
+    "name": "VThrustOn",
+    "assetPack": "core",
+    "options": {
+      "name": "VThrustOn",
+      "exec": [
+        "() => {",
+        "          // console.log(`VThrustOn`, this.blackboard);",
+        "          this.blackboard.keys.ArrowUp = 'down';",
+        "        }"
+      ]
+    },
+    "layout": {
+      "x": 254,
+      "y": 551
+    },
+    "parent": "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c",
+    "decorators": [
+      "7d9c2ef7-cbbe-423c-b6a8-b329ec48db20"
+    ]
+  },
+  "7d9c2ef7-cbbe-423c-b6a8-b329ec48db20": {
+    "id": "7d9c2ef7-cbbe-423c-b6a8-b329ec48db20",
+    "class": "WhileCondition",
+    "name": "VThrustHold",
+    "assetPack": "core",
+    "options": {
+      "name": "VThrustHold",
+      "init": [
+        "() => {}"
+      ],
+      "conditional": [
+        "() => {",
+        "          let hold = false;",
+        "",
+        "          if (this.blackboard.controller.shipVelocity.y < -3) {",
+        "            console.log(`velocity too high: ${this.blackboard.controller.shipVelocity.y} holding.`);",
+        "            hold = true;",
+        "          }",
+        "",
+        "          return hold;",
+        "        }"
+      ]
+    }
+  },
+  "4dbd2b2a-21ee-47d6-93c6-3b457e8d5337": {
+    "id": "4dbd2b2a-21ee-47d6-93c6-3b457e8d5337",
+    "class": "ExecuteScript",
+    "name": "VThrustOff",
+    "assetPack": "core",
+    "options": {
+      "name": "VThrustOff",
+      "exec": [
+        "() => {",
+        "          // console.log(`VThrustOff`, this.blackboard);",
+        "          this.blackboard.keys.ArrowUp = 'up';",
+        "        }"
+      ]
+    },
+    "layout": {
+      "x": 421,
+      "y": 551
+    },
+    "parent": "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c",
+    "decorators": []
+  },
+  "db6ebc20-f277-4f62-8ea5-5bf7340ac756": {
+    "id": "db6ebc20-f277-4f62-8ea5-5bf7340ac756",
+    "class": "Sequence",
+    "name": "Horizontal",
+    "assetPack": "core",
+    "options": {
+      "name": "Horizontal"
+    },
+    "layout": {
+      "x": 560,
+      "y": 380
+    },
+    "parent": "d3b2ccc1-bd6f-450b-a8fe-d62b5de8a368",
+    "decorators": [],
+    "children": [
+      "6927b270-3494-4808-816a-f20a8f8ee11a",
+      "a006cc01-a249-47b4-a9a9-51554b66ec07",
+      "1f813ac3-f2e5-4ed7-a13c-8a58206340dd"
+    ]
+  },
+  "6927b270-3494-4808-816a-f20a8f8ee11a": {
+    "id": "6927b270-3494-4808-816a-f20a8f8ee11a",
+    "class": "TimeoutJs",
+    "name": "HCooldown",
+    "assetPack": "core",
+    "options": {
+      "name": "HCooldown",
+      "getTime": [
+        "() => this.notepad.hCooldownTime"
+      ]
+    },
+    "layout": {
+      "x": 606,
+      "y": 702
+    },
+    "parent": "db6ebc20-f277-4f62-8ea5-5bf7340ac756",
+    "decorators": []
+  },
+  "a006cc01-a249-47b4-a9a9-51554b66ec07": {
+    "id": "a006cc01-a249-47b4-a9a9-51554b66ec07",
+    "class": "ExecuteScript",
+    "name": "HThrustOn",
+    "assetPack": "core",
+    "options": {
+      "name": "HThrustOn",
+      "exec": [
+        "() => {",
+        "          // console.log(`HThrustOn`, this.blackboard);",
+        "          const shipL = this.blackboard.controller.shipCoords.x;",
+        "          const shipR = this.blackboard.controller.shipCoords.x + 40;",
+        "          const padL = this.blackboard.controller.landingPadRect.x;",
+        "          const padR = this.blackboard.controller.landingPadRect.x + this.blackboard.controller.landingPadRect.width;",
+        "",
+        "          if (shipL < padL) {",
+        "            this.blackboard.keys.ArrowRight = 'down';",
+        "          } else if (shipR > padR) {",
+        "            this.blackboard.keys.ArrowLeft = 'down';",
+        "          }",
+        "        }"
+      ]
+    },
+    "layout": {
+      "x": 770,
+      "y": 700
+    },
+    "parent": "db6ebc20-f277-4f62-8ea5-5bf7340ac756",
+    "decorators": [
+      "36da6b7c-3de9-4e81-af59-e932ed7d4cbd"
+    ]
+  },
+  "36da6b7c-3de9-4e81-af59-e932ed7d4cbd": {
+    "id": "36da6b7c-3de9-4e81-af59-e932ed7d4cbd",
+    "class": "WhileCondition",
+    "name": "HThrustHold",
+    "assetPack": "core",
+    "options": {
+      "name": "HThrustHold",
+      "init": [
+        "() => {",
+        "          this.notepad.HThrustStart = Date.now();",
+        "        }"
+      ],
+      "conditional": [
+        "() => {",
+        "          let hold = false;",
+        "          const elapsed = Date.now() - this.notepad.HThrustStart;",
+        "",
+        "          if (elapsed < 50) {",
+        "            hold = true;",
+        "          }",
+        "",
+        "          return hold;",
+        "        }"
+      ]
+    }
+  },
+  "1f813ac3-f2e5-4ed7-a13c-8a58206340dd": {
+    "id": "1f813ac3-f2e5-4ed7-a13c-8a58206340dd",
+    "class": "ExecuteScript",
+    "name": "HThrustOff",
+    "assetPack": "core",
+    "options": {
+      "name": "HThrustOff",
+      "exec": [
+        "() => {",
+        "          // console.log(`HThrustOff`, this.blackboard);",
+        "          this.blackboard.keys.ArrowLeft = 'up';",
+        "          this.blackboard.keys.ArrowRight = 'up';",
+        "        }"
+      ]
+    },
+    "layout": {
+      "x": 939,
+      "y": 698
+    },
+    "parent": "db6ebc20-f277-4f62-8ea5-5bf7340ac756",
+    "decorators": []
+  }
+}

@@ -1,4 +1,5 @@
-import { PortType } from '../../model/AbstractData';
+import { PortType, NodeData } from '../../model/AbstractData';
+import { Status } from '../../model/BehaviorTreeData';
 
 export enum NodeColor {
     None = 'none',
@@ -31,7 +32,7 @@ export interface NodeStyle {
     backgroundColor: NodeColor;
 }
 
-const NodeClassStyle = {
+const NodeClassStyle: any = {
     'default': {
         borderWidth: '1px',
         borderColor: NodeColor.Blue,
@@ -52,44 +53,72 @@ class NodeUtils {
     };
 
     static portOffsets = {
-        base: {x: 0, y: 0},
-        input: {x: 0, y: -NodeUtils.baseDimensions.height / 2},
-        output: {x: 0, y: NodeUtils.baseDimensions.height / 2},
+        base: { x: 0, y: 0 },
+        input: { x: 0, y: -NodeUtils.baseDimensions.height / 2 },
+        output: { x: 0, y: NodeUtils.baseDimensions.height / 2 },
     };
 
-    static getPortCoords( type: PortType, baseCoords: {x: number, y: number}): {x: number, y: number} {
-        const offset: {x: number, y: number} = NodeUtils.portOffsets[type] || {x: 0, y: 0};
-        let result: {x: number, y: number} = {x: baseCoords.x + offset.x, y: baseCoords.y + offset.y};
+    static getPortCoords(type: PortType, baseCoords: { x: number, y: number }): { x: number, y: number } {
+        const offset: { x: number, y: number } = NodeUtils.portOffsets[type] || { x: 0, y: 0 };
+        let result: { x: number, y: number } = { x: baseCoords.x + offset.x, y: baseCoords.y + offset.y };
         return result;
     }
 
-    static getBaseRect(baseCoords: {x: number, y: number}): {x: number, y: number, width: number, height: number} {
+    static getBaseRect(baseCoords: { x: number, y: number }): { x: number, y: number, width: number, height: number } {
         return {
-            x: baseCoords.x - NodeUtils.baseDimensions.width / 2, 
-            y: baseCoords.y - NodeUtils.baseDimensions.height / 2, 
-            width: NodeUtils.baseDimensions.width, 
+            x: baseCoords.x - NodeUtils.baseDimensions.width / 2,
+            y: baseCoords.y - NodeUtils.baseDimensions.height / 2,
+            width: NodeUtils.baseDimensions.width,
             height: NodeUtils.baseDimensions.height,
         }
     }
 
-    static getDivRect(baseCoords: {x: number, y: number}): {top: string, left: string, width: string, height: string} {
+    static getDivRect(baseCoords: { x: number, y: number }): { top: string, left: string, width: string, height: string } {
         return {
-            top: `${baseCoords.y - (NodeUtils.baseDimensions.height / 2 - NodeUtils.divDimensions.inset - NodeUtils.divDimensions.tabHeight)}px`, 
-            left: `${baseCoords.x - (NodeUtils.baseDimensions.width / 2 - NodeUtils.divDimensions.inset)}px`, 
-            width: `${NodeUtils.baseDimensions.width - NodeUtils.divDimensions.inset * 2}px`, 
+            top: `${baseCoords.y - (NodeUtils.baseDimensions.height / 2 - NodeUtils.divDimensions.inset - NodeUtils.divDimensions.tabHeight)}px`,
+            left: `${baseCoords.x - (NodeUtils.baseDimensions.width / 2 - NodeUtils.divDimensions.inset)}px`,
+            width: `${NodeUtils.baseDimensions.width - NodeUtils.divDimensions.inset * 2}px`,
             height: `${NodeUtils.baseDimensions.height - NodeUtils.divDimensions.inset * 2 - NodeUtils.divDimensions.tabHeight}px`,
         }
     }
 
-    static getNodeStyle(nodeClass: NodeClass): any {
+    static getNodeStyle(node: NodeData): any {
         let result = {
             borderWidth: '1px',
             borderColor: NodeColor.Blue,
             backgroundColor: NodeColor.Background,
         }
-        if (NodeClassStyle[nodeClass]) {
-            result = NodeClassStyle[nodeClass];
+        const btNode: any = node.properties.btNode;
+        if (btNode) {
+            const nodeClass: string = btNode.class;
+            if (nodeClass && NodeClassStyle[nodeClass]) {
+                result = NodeClassStyle[nodeClass];
+            }                
+            switch (btNode.status) {
+                case Status.SUCCEEDED:
+                    result.borderColor = NodeColor.Twilight;
+                    break;
+                case Status.FAILED:
+                    result.borderColor = NodeColor.Firecracker;
+                    break;
+                case Status.INTERRUPTED:
+                    result.borderColor = NodeColor.Candy;
+                    break;
+                case Status.IN_PROGRESS:
+                    result.borderColor = NodeColor.Tennis;
+                    break;
+                case Status.INVALID:
+                    result.borderColor = NodeColor.Hotrod;
+                    break;
+                case Status.PAUSED:
+                    result.borderColor = NodeColor.Topaz;
+                    break;
+                case Status.WAIT:
+                    result.borderColor = NodeColor.Grape;
+                    break;
+            }
         }
+
         return result;
     }
 }

@@ -4,6 +4,16 @@ import AbstractData, { NodeData, LinkData, PortType } from './AbstractData';
 
 const defaultBtFileData = require('./idle-example.bt.js').default;
 
+export enum Status {
+    SUCCEEDED,
+    FAILED,
+    INTERRUPTED,
+    IN_PROGRESS,
+    INVALID,
+    PAUSED,
+    WAIT
+}
+
 export default class BehaviorTreeData extends AbstractData {
 
     protected _nodeMap: any = {};
@@ -11,22 +21,27 @@ export default class BehaviorTreeData extends AbstractData {
 
     constructor() {
         super();
-        this.init();
+        this.init('untitled.bt');
         if (process.env.REACT_APP_MODE === 'web') {
             this._nodeMap = {};
             this._decoratorMap = {};
             this._nodes = [];
             this._links = [];
-            this.fileData = defaultBtFileData;
+            this._fileData = defaultBtFileData;
         }
     }
 
-    init() {
+    init(filePath?: string) {
+        this.filePath = filePath || 'untitled.bt';
+        this._nodeMap = {};
+        this._decoratorMap = {};
+        this._nodes = [];
+        this._links = [];
         const newId = uuidv4();
         const nodeClass = 'Parallel';
         const btNode = {
             id: newId,
-            class: 'nodeClass',
+            class: nodeClass,
             name: `${newId.substring(0, 3)}: ${nodeClass}`,
             "asset-pack": "core",
             // parent: '',
@@ -35,14 +50,16 @@ export default class BehaviorTreeData extends AbstractData {
             decorators: [
             ],
             options: {},
-            position: {
-                x: 493,
-                y: 157
+            layout: {
+                x: 523,
+                y: 136
             }
         }
         const initData: any = {};
         initData[newId] = btNode;
-        this.fileData = initData;
+        this._fileData = initData;
+        console.log(this.fileData)
+        this.processFileData();
     }
 
     load(filePath: string) {
@@ -99,9 +116,9 @@ export default class BehaviorTreeData extends AbstractData {
                 btNode: btNode,
             },
             labels: [],
-            position: btNode.position || { x: 0, y: 0 },
-            x: btNode.position ? btNode.position.x : 0,
-            y: btNode.position ? btNode.position.y : 0,
+            layout: btNode.layout || { x: 0, y: 0 },
+            x: btNode.layout ? btNode.layout.x : 0,
+            y: btNode.layout ? btNode.layout.y : 0,
         }
         this._nodes.push(node);
         node.id = this._nodes.length - 1;
@@ -121,7 +138,7 @@ export default class BehaviorTreeData extends AbstractData {
                         // name: '',
                     },
                     labels: [],
-                    position: {
+                    layout: {
                         x: coordinates.x,
                         y: coordinates.y,
                     },
@@ -167,7 +184,7 @@ export default class BehaviorTreeData extends AbstractData {
                 decorators: [
                 ],
                 options: {},
-                position: {
+                layout: {
                     x: x,
                     y: y,
                 }
@@ -217,6 +234,40 @@ export default class BehaviorTreeData extends AbstractData {
             console.log(`BehaviorTreeData: removeBtNode: ERROR. Cannot delete node with children.`, btNode);
         }
         return result;
+    }
+
+    resetBtStatus(): void {
+        Object.keys(this._nodeMap).forEach(key => {
+            const node: any = this._nodeMap[key];
+            if (node) {
+                const btNode: any = node.properties.btNode;
+                if (btNode) {
+                    btNode.status = undefined;
+                }
+            }
+        });
+        this.emit('updateStatus');
+    }
+
+    updateBtNodeStatus(btNodeId: string, status: number) {
+        const node = this._nodeMap[btNodeId];
+        let changed = false;
+        if (node) {
+            const btNode: any = node.properties.btNode;
+            if (btNode) {
+                if (btNode.status !== status) {
+                    changed = true;
+                    const previousStatus = btNode.status;
+                    btNode.status = status;
+                    const btNodeIdShort = (typeof btNode.id === `string`) ? btNode.id.substring(0,3) : '';
+                    console.log(`    ${btNode.class} (${btNodeIdShort}):  ${Status[previousStatus]} --> ${Status[status]}}`);
+                }
+
+            }
+        }
+        if (changed) {
+            this.emit('updateStatus');
+        }
     }
 
     removeNode(nodeToRemove: NodeData) {
@@ -348,8 +399,8 @@ export default class BehaviorTreeData extends AbstractData {
 
     onStopDraggingNode(node: NodeData): void {
         const btNode = node.properties.btNode;
-        btNode.position.x = node.x;
-        btNode.position.y = node.y;
+        btNode.layout.x = node.x;
+        btNode.layout.y = node.y;
         if (btNode) {
             const node = this._nodeMap[btNode.parent];
             const parentBtNode = node ? node.properties.btNode : undefined;
@@ -359,7 +410,7 @@ export default class BehaviorTreeData extends AbstractData {
                     childBtNodes.push(this._nodeMap[childId].properties.btNode);
                 });
                 childBtNodes.sort((btNodeA: any, btNodeB): number => {
-                    return btNodeA.position.x - btNodeB.position.x
+                    return btNodeA.layout.x - btNodeB.layout.x
                 });
                 parentBtNode.children = childBtNodes.map((node: any) => {
                     return node.id;
@@ -370,20 +421,24 @@ export default class BehaviorTreeData extends AbstractData {
 
     getFileData(): any {
         this._nodes.forEach(node => {
-            node.position = {
+            node.layout = {
                 x: node.x,
                 y: node.y,
             }
-            node.properties.btNode.position = {
+            node.properties.btNode.layout = {
                 x: node.x,
                 y: node.y,
             }
         });
         const newFileData: any = {};
         Object.keys(this._nodeMap).forEach((key: string) => {
-            newFileData[key] = this._nodeMap[key].properties.btNode;
+            const btNode = this._nodeMap[key].properties.btNode;
+            btNode.status = undefined;
+            newFileData[key] = btNode;
         });
         Object.keys(this._decoratorMap).forEach((key: string) => {
+            const btNode = this._decoratorMap[key];
+            btNode.status = undefined;
             newFileData[key] = this._decoratorMap[key];
         });
         newFileData['meta'] = this._fileData.meta || { "version": 1 };

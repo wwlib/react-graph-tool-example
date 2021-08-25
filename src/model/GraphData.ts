@@ -11,6 +11,10 @@ export default class GraphData extends AbstractData {
         super();
     }
 
+    init(filePath: string) {
+        
+    }
+
     processFileData(): any {
         this._nodes = this._fileData.nodes;
         this._links = this._fileData.links;
@@ -19,7 +23,7 @@ export default class GraphData extends AbstractData {
     // TODO
     getFileData(): any {
         this._nodes.forEach(node => {
-            node.position = {
+            node.layout = {
                 x: node.x,
                 y: node.y,
             }
@@ -36,7 +40,7 @@ export default class GraphData extends AbstractData {
                 id: '',
             },
             labels: [],
-            position: {
+            layout: {
                 x: coordinates.x,
                 y: coordinates.y,
             },

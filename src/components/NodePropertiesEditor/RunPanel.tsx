@@ -1,7 +1,8 @@
 import { Component } from 'react';
 import './NodePropertiesEditor.css';
 import Model from '../../model/Model';
-import BehaviorTreeData from '../../model/BehaviorTreeData'
+// import BehaviorTreeData from '../../model/BehaviorTreeData';
+import BehaviorTreeEngineManager from '../../model/BehaviorTreeEngineManager';
 
 export interface RunPanelProps {
     data: any;
@@ -38,10 +39,16 @@ export default class RunPanel extends Component<RunPanelProps, RunPanelState> {
     onMouseDown = (action: string, data?: any) => {
         switch (action) {
             case 'run':
-                this.props.onMouseEvent('run', data);
+                // this.props.onMouseEvent('run', data);
+                BehaviorTreeEngineManager.Instance().run();
+                break;
+            case 'step':
+                // this.props.onMouseEvent('step', data);
+                BehaviorTreeEngineManager.Instance().step();
                 break;
             case 'cancelRun':
-                this.props.onMouseEvent('cancelRun', data);
+                // this.props.onMouseEvent('cancelRun', data);
+                BehaviorTreeEngineManager.Instance().cancel();
                 break;
         }
     }
@@ -50,6 +57,7 @@ export default class RunPanel extends Component<RunPanelProps, RunPanelState> {
         return (
             <div className={'RunPanel'}>
                 <button className="RunPanelButton" onMouseDown={() => this.onMouseDown('run')}>Run</button>
+                <button className="RunPanelButton" onMouseDown={() => this.onMouseDown('step')}>Step</button>
                 <button className="RunPanelButton" onMouseDown={() => this.onMouseDown('cancelRun')}>Cancel</button>
             </div>
         )

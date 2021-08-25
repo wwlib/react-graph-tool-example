@@ -51,6 +51,7 @@
   "dependencies": {
     "d3": "^4.12.0",
     "find-root": "^1.1.0",
+    "interaction-flow-engine": "git+ssh://git@gitlab.com:ntt-disruption-global/jibo/jibo-rom/interaction-flow-engine.git#7a67b66e0759d88487c47f87fb9a80bd063f28a8",
     "jsonfile": "^6.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

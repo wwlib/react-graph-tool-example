@@ -41,7 +41,7 @@ const NodeDiv = ({ data, appModel, onMouseEvent }) => {
     if (!data.isTemporary) {
         div = <div className='nodeDiv' style={divRect}>
             <div className={decoratorClassName}>
-                { firstDecorator ? `${firstDecorator.class}` : ''}
+                { firstDecorator ? `${firstDecorator.name}` : ''}
             </div>
             <div className='nodeclass'>
                 {btNode.class}

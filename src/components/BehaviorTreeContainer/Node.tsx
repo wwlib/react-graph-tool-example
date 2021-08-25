@@ -28,7 +28,7 @@ const Node = ({ data, onMouseEvent }) => {
         onMouseEvent('up', port, data);
     }
 
-    const nodeStyle: NodeStyle = NodeUtils.getNodeStyle(NodeClass.Default);
+    const nodeStyle: NodeStyle = NodeUtils.getNodeStyle(data);
     let fill: NodeColor = nodeStyle.backgroundColor;
     if (data.isTemporary) {
         fill = NodeColor.None;

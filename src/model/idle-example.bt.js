@@ -12,7 +12,7 @@ const btData = {
         "options": {
             "succeedOnOne": false
         },
-        "position": {
+        "layout": {
             "x": 511,
             "y": 153
         }
@@ -31,7 +31,7 @@ const btData = {
             23
         ],
         "options": {},
-        "position": {
+        "layout": {
             "x": 654,
             "y": 320
         }
@@ -50,7 +50,7 @@ const btData = {
                 "}"
             ]
         },
-        "position": {
+        "layout": {
             "x": 759,
             "y": 476
         },
@@ -70,7 +70,7 @@ const btData = {
             22
         ],
         "options": {},
-        "position": {
+        "layout": {
             "x": 369,
             "y": 328
         }
@@ -88,7 +88,7 @@ const btData = {
                 "}"
             ]
         },
-        "position": {
+        "layout": {
             "x": 261,
             "y": 478
         },
@@ -144,7 +144,7 @@ const btData = {
         },
         "asset-pack": "core",
         "parent": 19,
-        "position": {
+        "layout": {
             "x": 425,
             "y": 476
         }
@@ -163,7 +163,7 @@ const btData = {
         "asset-pack": "core",
         "parent": 16,
         "children": [],
-        "position": {
+        "layout": {
             "x": 593,
             "y": 477
         }
