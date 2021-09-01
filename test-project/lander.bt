@@ -1,14 +1,16 @@
 {
-  "meta": {
-    "version": 1
-  },
   "5c663278-10f2-4257-ae2b-27c85bb1a80b": {
     "id": "5c663278-10f2-4257-ae2b-27c85bb1a80b",
     "class": "Sequence",
     "name": "Root",
     "assetPack": "core",
     "options": {
-      "name": "Root"
+      "name": "Root",
+      "id": "5c663278-10f2-4257-ae2b-27c85bb1a80b",
+      "layout": {
+        "x": 410,
+        "y": 70
+      }
     },
     "layout": {
       "x": 410,
@@ -29,11 +31,28 @@
       "name": "Init",
       "exec": [
         "() => {",
-        "          this.notepad.vCooldownTime = 100;",
-        "          this.notepad.hCooldownTime = 100;",
-        "          console.log('Init.', this.blackboard, this.notepad, this.result);",
+        "          notepad.vCooldownTime = 500;",
+        "          notepad.hCooldownTime = 200;",
+        "          notepad.tCooldownTime = 200;",
+        "          const padCenter = blackboard.controller.landingPadRect.x + blackboard.controller.landingPadRect.width / 2;",
+        "          const padY = blackboard.controller.landingPadRect.y;",
+        "          notepad.target = {",
+        "            x: padCenter,",
+        "            y: padY,",
+        "            velocity: {",
+        "              x: 0,",
+        "              y: 0",
+        "            }",
+        "          };",
+        "          console.log('Init.', blackboard, notepad, result);",
+        "          console.log(`target: (${notepad.target.x}, ${notepad.target.y}) <${notepad.target.velocity.x}, ${notepad.target.velocity.y}>`);",
         "        }"
-      ]
+      ],
+      "id": "a21b7208-c19d-4db6-87df-f2a3e6a36087",
+      "layout": {
+        "x": 318,
+        "y": 218
+      }
     },
     "layout": {
       "x": 318,
@@ -49,7 +68,12 @@
     "assetPack": "core",
     "options": {
       "name": "Flight",
-      "succeedOnOne": false
+      "succeedOnOne": false,
+      "id": "d3b2ccc1-bd6f-450b-a8fe-d62b5de8a368",
+      "layout": {
+        "x": 510,
+        "y": 219
+      }
     },
     "layout": {
       "x": 510,
@@ -61,25 +85,9 @@
     ],
     "children": [
       "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c",
-      "db6ebc20-f277-4f62-8ea5-5bf7340ac756"
+      "db6ebc20-f277-4f62-8ea5-5bf7340ac756",
+      "c37510fd-3f7b-49b8-8d3b-c2d39b78aad1"
     ]
-  },
-  "1eb4d866-2672-4806-9b8d-d0e34ccd0833": {
-    "id": "1eb4d866-2672-4806-9b8d-d0e34ccd0833",
-    "class": "WhileCondition",
-    "name": "FlightLoop",
-    "assetPack": "core",
-    "options": {
-      "name": "FlightLoop",
-      "init": [
-        "() => {}"
-      ],
-      "conditional": [
-        "() => {",
-        "          return true;",
-        "        }"
-      ]
-    }
   },
   "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c": {
     "id": "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c",
@@ -87,14 +95,21 @@
     "name": "Vertical",
     "assetPack": "core",
     "options": {
-      "name": "Vertical"
+      "name": "Vertical",
+      "id": "ff0bfe70-05f2-4d39-966a-e6bc07b2f16c",
+      "layout": {
+        "x": 312,
+        "y": 384
+      }
     },
     "layout": {
       "x": 312,
       "y": 384
     },
     "parent": "d3b2ccc1-bd6f-450b-a8fe-d62b5de8a368",
-    "decorators": [],
+    "decorators": [
+      "dda7e6b6-e40b-46f2-8c49-be24016d62aa"
+    ],
     "children": [
       "99d8fe74-b456-4ef0-9054-cfc9c88e3be3",
       "ac0168f1-a455-4377-8d79-ef42b45e02cc",
@@ -109,8 +124,13 @@
     "options": {
       "name": "VCooldown",
       "getTime": [
-        "() => this.notepad.vCooldownTime"
-      ]
+        "() => notepad.vCooldownTime"
+      ],
+      "id": "99d8fe74-b456-4ef0-9054-cfc9c88e3be3",
+      "layout": {
+        "x": 88,
+        "y": 549
+      }
     },
     "layout": {
       "x": 88,
@@ -128,10 +148,15 @@
       "name": "VThrustOn",
       "exec": [
         "() => {",
-        "          // console.log(`VThrustOn`, this.blackboard);",
-        "          this.blackboard.keys.ArrowUp = 'down';",
+        "          console.log(`VThrustOn`);",
+        "          blackboard.keys.ArrowUp = 'down';",
         "        }"
-      ]
+      ],
+      "id": "ac0168f1-a455-4377-8d79-ef42b45e02cc",
+      "layout": {
+        "x": 254,
+        "y": 551
+      }
     },
     "layout": {
       "x": 254,
@@ -142,30 +167,6 @@
       "7d9c2ef7-cbbe-423c-b6a8-b329ec48db20"
     ]
   },
-  "7d9c2ef7-cbbe-423c-b6a8-b329ec48db20": {
-    "id": "7d9c2ef7-cbbe-423c-b6a8-b329ec48db20",
-    "class": "WhileCondition",
-    "name": "VThrustHold",
-    "assetPack": "core",
-    "options": {
-      "name": "VThrustHold",
-      "init": [
-        "() => {}"
-      ],
-      "conditional": [
-        "() => {",
-        "          let hold = false;",
-        "",
-        "          if (this.blackboard.controller.shipVelocity.y < -3) {",
-        "            console.log(`velocity too high: ${this.blackboard.controller.shipVelocity.y} holding.`);",
-        "            hold = true;",
-        "          }",
-        "",
-        "          return hold;",
-        "        }"
-      ]
-    }
-  },
   "4dbd2b2a-21ee-47d6-93c6-3b457e8d5337": {
     "id": "4dbd2b2a-21ee-47d6-93c6-3b457e8d5337",
     "class": "ExecuteScript",
@@ -175,10 +176,15 @@
       "name": "VThrustOff",
       "exec": [
         "() => {",
-        "          // console.log(`VThrustOff`, this.blackboard);",
-        "          this.blackboard.keys.ArrowUp = 'up';",
+        "          // console.log(`VThrustOff`, blackboard);",
+        "          blackboard.keys.ArrowUp = 'up';",
         "        }"
-      ]
+      ],
+      "id": "4dbd2b2a-21ee-47d6-93c6-3b457e8d5337",
+      "layout": {
+        "x": 421,
+        "y": 551
+      }
     },
     "layout": {
       "x": 421,
@@ -193,14 +199,21 @@
     "name": "Horizontal",
     "assetPack": "core",
     "options": {
-      "name": "Horizontal"
+      "name": "Horizontal",
+      "id": "db6ebc20-f277-4f62-8ea5-5bf7340ac756",
+      "layout": {
+        "x": 523,
+        "y": 410
+      }
     },
     "layout": {
-      "x": 560,
-      "y": 380
+      "x": 523,
+      "y": 410
     },
     "parent": "d3b2ccc1-bd6f-450b-a8fe-d62b5de8a368",
-    "decorators": [],
+    "decorators": [
+      "cdddafaa-a5be-4c68-9011-b1e3bede5f73"
+    ],
     "children": [
       "6927b270-3494-4808-816a-f20a8f8ee11a",
       "a006cc01-a249-47b4-a9a9-51554b66ec07",
@@ -215,8 +228,13 @@
     "options": {
       "name": "HCooldown",
       "getTime": [
-        "() => this.notepad.hCooldownTime"
-      ]
+        "() => notepad.hCooldownTime"
+      ],
+      "id": "6927b270-3494-4808-816a-f20a8f8ee11a",
+      "layout": {
+        "x": 606,
+        "y": 702
+      }
     },
     "layout": {
       "x": 606,
@@ -234,19 +252,22 @@
       "name": "HThrustOn",
       "exec": [
         "() => {",
-        "          // console.log(`HThrustOn`, this.blackboard);",
-        "          const shipL = this.blackboard.controller.shipCoords.x;",
-        "          const shipR = this.blackboard.controller.shipCoords.x + 40;",
-        "          const padL = this.blackboard.controller.landingPadRect.x;",
-        "          const padR = this.blackboard.controller.landingPadRect.x + this.blackboard.controller.landingPadRect.width;",
+        "          // console.log(`HThrustOn`, blackboard);",
+        "          const xVel = blackboard.controller.shipVelocity.x;",
+        "          const xVelTarget = notepad.target.velocity.x;",
         "",
-        "          if (shipL < padL) {",
-        "            this.blackboard.keys.ArrowRight = 'down';",
-        "          } else if (shipR > padR) {",
-        "            this.blackboard.keys.ArrowLeft = 'down';",
+        "          if (xVel > xVelTarget) {",
+        "            blackboard.keys.ArrowLeft = 'down';",
+        "          } else if (xVel < xVelTarget) {",
+        "            blackboard.keys.ArrowRight = 'down';",
         "          }",
         "        }"
-      ]
+      ],
+      "id": "a006cc01-a249-47b4-a9a9-51554b66ec07",
+      "layout": {
+        "x": 770,
+        "y": 700
+      }
     },
     "layout": {
       "x": 770,
@@ -257,32 +278,6 @@
       "36da6b7c-3de9-4e81-af59-e932ed7d4cbd"
     ]
   },
-  "36da6b7c-3de9-4e81-af59-e932ed7d4cbd": {
-    "id": "36da6b7c-3de9-4e81-af59-e932ed7d4cbd",
-    "class": "WhileCondition",
-    "name": "HThrustHold",
-    "assetPack": "core",
-    "options": {
-      "name": "HThrustHold",
-      "init": [
-        "() => {",
-        "          this.notepad.HThrustStart = Date.now();",
-        "        }"
-      ],
-      "conditional": [
-        "() => {",
-        "          let hold = false;",
-        "          const elapsed = Date.now() - this.notepad.HThrustStart;",
-        "",
-        "          if (elapsed < 50) {",
-        "            hold = true;",
-        "          }",
-        "",
-        "          return hold;",
-        "        }"
-      ]
-    }
-  },
   "1f813ac3-f2e5-4ed7-a13c-8a58206340dd": {
     "id": "1f813ac3-f2e5-4ed7-a13c-8a58206340dd",
     "class": "ExecuteScript",
@@ -292,11 +287,16 @@
       "name": "HThrustOff",
       "exec": [
         "() => {",
-        "          // console.log(`HThrustOff`, this.blackboard);",
-        "          this.blackboard.keys.ArrowLeft = 'up';",
-        "          this.blackboard.keys.ArrowRight = 'up';",
+        "          // console.log(`HThrustOff`, blackboard);",
+        "          blackboard.keys.ArrowLeft = 'up';",
+        "          blackboard.keys.ArrowRight = 'up';",
         "        }"
-      ]
+      ],
+      "id": "1f813ac3-f2e5-4ed7-a13c-8a58206340dd",
+      "layout": {
+        "x": 939,
+        "y": 698
+      }
     },
     "layout": {
       "x": 939,
@@ -304,5 +304,246 @@
     },
     "parent": "db6ebc20-f277-4f62-8ea5-5bf7340ac756",
     "decorators": []
+  },
+  "c37510fd-3f7b-49b8-8d3b-c2d39b78aad1": {
+    "id": "c37510fd-3f7b-49b8-8d3b-c2d39b78aad1",
+    "class": "Sequence",
+    "name": "Target",
+    "assetPack": "core",
+    "options": {
+      "name": "Target",
+      "id": "c37510fd-3f7b-49b8-8d3b-c2d39b78aad1",
+      "layout": {
+        "x": 830,
+        "y": 322
+      }
+    },
+    "layout": {
+      "x": 830,
+      "y": 322
+    },
+    "parent": "d3b2ccc1-bd6f-450b-a8fe-d62b5de8a368",
+    "decorators": [
+      "a3a67154-59df-44d5-9213-3b46cec09bcf"
+    ],
+    "children": [
+      "eea4549b-461b-4adb-9ec2-1d449cfc08d5",
+      "5e7005b5-b1f0-4a2a-ba6c-2f95cf8808be"
+    ]
+  },
+  "eea4549b-461b-4adb-9ec2-1d449cfc08d5": {
+    "id": "eea4549b-461b-4adb-9ec2-1d449cfc08d5",
+    "class": "TimeoutJs",
+    "name": "TCooldown",
+    "assetPack": "core",
+    "options": {
+      "name": "TCooldown",
+      "getTime": [
+        "() => notepad.tCooldownTime"
+      ],
+      "id": "eea4549b-461b-4adb-9ec2-1d449cfc08d5",
+      "layout": {
+        "x": 729,
+        "y": 504
+      }
+    },
+    "layout": {
+      "x": 729,
+      "y": 504
+    },
+    "parent": "c37510fd-3f7b-49b8-8d3b-c2d39b78aad1",
+    "decorators": []
+  },
+  "5e7005b5-b1f0-4a2a-ba6c-2f95cf8808be": {
+    "id": "5e7005b5-b1f0-4a2a-ba6c-2f95cf8808be",
+    "class": "ExecuteScript",
+    "name": "AdjustTarget",
+    "assetPack": "core",
+    "options": {
+      "name": "AdjustTarget",
+      "exec": [
+        "() => {",
+        "          const padCenter = blackboard.controller.landingPadRect.x + blackboard.controller.landingPadRect.width / 2;",
+        "          const padY = blackboard.controller.landingPadRect.y;",
+        "          const shipX = blackboard.controller.shipCoords.x + 20;",
+        "          const hOffset = padCenter - shipX;",
+        "          notepad.target.x = padCenter;",
+        "          notepad.target.y = padY;",
+        "",
+        "          if (padY - blackboard.controller.shipCoords.y > 20) {",
+        "            // set target higher at first",
+        "            notepad.target.y = padY - 20;",
+        "          }",
+        "",
+        "          notepad.target.velocity.x = hOffset / 50;",
+        "          console.log(`target: (${notepad.target.x}, ${notepad.target.y}) <${notepad.target.velocity.x}, ${notepad.target.velocity.y}>`);",
+        "          const shipAltitude = notepad.target.y - blackboard.controller.shipCoords.y;",
+        "          notepad.target.velocity.y = -10;",
+        "",
+        "          if (shipAltitude < blackboard.controller.world.height / 2) {",
+        "            notepad.target.velocity.y = -3;",
+        "          }",
+        "",
+        "          if (shipAltitude < 60 && Math.abs(hOffset) > 70) {",
+        "            notepad.target.velocity.y = 3;",
+        "          } else if (shipAltitude < 20) {",
+        "            notepad.target.velocity.y = 0;",
+        "          }",
+        "",
+        "          notepad.hCooldownTime = shipAltitude / 2;",
+        "          notepad.vCooldownTime = shipAltitude / 3;",
+        "          notepad.tCooldownTime = shipAltitude / 3;",
+        "          console.log(`  vCool: ${notepad.vCooldownTime}: hCool: ${notepad.hCooldownTime} `);",
+        "        }"
+      ],
+      "id": "5e7005b5-b1f0-4a2a-ba6c-2f95cf8808be",
+      "layout": {
+        "x": 931,
+        "y": 499
+      }
+    },
+    "layout": {
+      "x": 931,
+      "y": 499
+    },
+    "parent": "c37510fd-3f7b-49b8-8d3b-c2d39b78aad1",
+    "decorators": []
+  },
+  "1eb4d866-2672-4806-9b8d-d0e34ccd0833": {
+    "id": "1eb4d866-2672-4806-9b8d-d0e34ccd0833",
+    "class": "WhileCondition",
+    "name": "FlightLoop",
+    "assetPack": "core",
+    "options": {
+      "name": "FlightLoop",
+      "init": [
+        "() => {}"
+      ],
+      "conditional": [
+        "() => {",
+        "          return true;",
+        "        }"
+      ],
+      "id": "1eb4d866-2672-4806-9b8d-d0e34ccd0833"
+    }
+  },
+  "7d9c2ef7-cbbe-423c-b6a8-b329ec48db20": {
+    "id": "7d9c2ef7-cbbe-423c-b6a8-b329ec48db20",
+    "class": "WhileCondition",
+    "name": "VThrustHold",
+    "assetPack": "core",
+    "options": {
+      "name": "VThrustHold",
+      "init": [
+        "() => {}"
+      ],
+      "conditional": [
+        "() => {",
+        "          let hold = false;",
+        "          const vShip = blackboard.controller.shipVelocity.y;",
+        "          const vTarget = notepad.target.velocity.y;",
+        "",
+        "          if (vShip < vTarget) {",
+        "            // console.log(`velocity too high: ${blackboard.controller.shipVelocity.y} holding.`);",
+        "            hold = true;",
+        "          }",
+        "",
+        "          console.log(`  VThrustHold: ${hold}: ${vShip} ${vTarget}`);",
+        "          return hold;",
+        "        }"
+      ],
+      "id": "7d9c2ef7-cbbe-423c-b6a8-b329ec48db20"
+    }
+  },
+  "36da6b7c-3de9-4e81-af59-e932ed7d4cbd": {
+    "id": "36da6b7c-3de9-4e81-af59-e932ed7d4cbd",
+    "class": "WhileCondition",
+    "name": "HThrustHold",
+    "assetPack": "core",
+    "options": {
+      "name": "HThrustHold",
+      "init": [
+        "() => {",
+        "          notepad.HThrustStart = Date.now();",
+        "        }"
+      ],
+      "conditional": [
+        "() => {",
+        "          let hold = false; // const elapsed = Date.now() - notepad.HThrustStart;",
+        "          // if (elapsed < 50) {",
+        "          //     hold = true;",
+        "          // }",
+        "",
+        "          const velocityOffset = blackboard.controller.shipVelocity.x - notepad.target.velocity.x;",
+        "",
+        "          if (Math.abs(velocityOffset) > 1) {",
+        "            hold = true;",
+        "          }",
+        "",
+        "          return hold;",
+        "        }"
+      ],
+      "id": "36da6b7c-3de9-4e81-af59-e932ed7d4cbd"
+    }
+  },
+  "dda7e6b6-e40b-46f2-8c49-be24016d62aa": {
+    "id": "dda7e6b6-e40b-46f2-8c49-be24016d62aa",
+    "class": "WhileCondition",
+    "name": "vLoop",
+    "asset-pack": "core",
+    "options": {
+      "init": [
+        "() => {",
+        "}"
+      ],
+      "conditional": [
+        "() => {",
+        "  return true;",
+        "}"
+      ],
+      "name": "vLoop",
+      "id": "dda7e6b6-e40b-46f2-8c49-be24016d62aa"
+    }
+  },
+  "cdddafaa-a5be-4c68-9011-b1e3bede5f73": {
+    "id": "cdddafaa-a5be-4c68-9011-b1e3bede5f73",
+    "class": "WhileCondition",
+    "name": "hLoop",
+    "asset-pack": "core",
+    "options": {
+      "init": [
+        "() => {",
+        "}"
+      ],
+      "conditional": [
+        "() => {",
+        "  return true;",
+        "}"
+      ],
+      "name": "hLoop",
+      "id": "cdddafaa-a5be-4c68-9011-b1e3bede5f73"
+    }
+  },
+  "a3a67154-59df-44d5-9213-3b46cec09bcf": {
+    "id": "a3a67154-59df-44d5-9213-3b46cec09bcf",
+    "class": "WhileCondition",
+    "name": "tLoop",
+    "asset-pack": "core",
+    "options": {
+      "init": [
+        "() => {",
+        "}"
+      ],
+      "conditional": [
+        "() => {",
+        "  return true;",
+        "}"
+      ],
+      "name": "tLoop",
+      "id": "a3a67154-59df-44d5-9213-3b46cec09bcf"
+    }
+  },
+  "meta": {
+    "version": 1
   }
 }

@@ -87,6 +87,9 @@ export default class NodePropertiesEditor extends Component<NodePropertiesEditor
                 this.props.changed('removeDecorator', data);
                 break;
         }
+        this.setState({
+            text: this.props.data ? JSON.stringify(this.props.data.properties.btNode, null, 2) : '',
+        });
     }
 
     onDecoratorChanged = (action, data) => {

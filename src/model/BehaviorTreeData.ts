@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import jsonfile from 'jsonfile';
 import AbstractData, { NodeData, LinkData, PortType } from './AbstractData';
+import { BehaviorTree } from 'interaction-flow-engine';
+import * as fs from 'fs-extra';
 
 const defaultBtFileData = require('./idle-example.bt.js').default;
 
@@ -244,20 +246,20 @@ export default class BehaviorTreeData extends AbstractData {
         this.emit('updateStatus');
     }
 
-    updateBtNodeStatus(btNodeId: string, status: number) {
+    updateBtNodeStatus(btNodeId: string, status: Status, previousStatusMap: any) {
         const node = this._nodeMap[btNodeId];
         let changed = false;
         if (node) {
             const btNode: any = node.properties.btNode;
             if (btNode) {
-                if (btNode.status !== status) {
+                if (previousStatusMap[btNodeId] !== status) {
                     changed = true;
-                    const previousStatus = btNode.status;
-                    btNode.status = status;
-                    const btNodeIdShort = (typeof btNode.id === `string`) ? btNode.id.substring(0,3) : '';
-                    console.log(`    ${btNode.class} (${btNodeIdShort}):  ${Status[previousStatus]} --> ${Status[status]}}`);
+                    const previousStatus = previousStatusMap[btNodeId];
+                    previousStatusMap[btNodeId] = status;
+                    btNode.status = status; // this updates the graph node, not the actual bt node
+                    const btNodeIdShort = (typeof btNode.id === `string`) ? btNode.id.substring(0, 3) : '';
+                    console.log(`    ${btNode.name} ${btNode.class} (${btNodeIdShort}):  ${Status[previousStatus]} --> ${Status[status]}`);
                 }
-
             }
         }
         if (changed) {
@@ -495,5 +497,17 @@ export default class BehaviorTreeData extends AbstractData {
     }
 
     autoLayout() {
+    }
+
+    // override
+    saveToFile(filePath?: string) {
+        if (filePath || this._filePath) {
+            const fileData = this.getFileData();
+            jsonfile.writeFileSync(filePath || this._filePath, fileData, { spaces: 2 });
+            const getBtRootCode: string = BehaviorTree.getCodeFromBtJson(fileData, this.rootNode.id);
+            let codeFilename: string = filePath || this._filePath;
+            codeFilename += '.ts';
+            fs.writeFileSync(codeFilename, getBtRootCode);
+        }
     }
 }

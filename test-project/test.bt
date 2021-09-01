@@ -1,0 +1,135 @@
+{
+  "825539ba-7bf7-439a-8f2b-65fb5b9afd37": {
+    "id": "825539ba-7bf7-439a-8f2b-65fb5b9afd37",
+    "class": "Sequence",
+    "name": "Try All",
+    "asset-pack": "core",
+    "children": [
+      "a6174b63-4086-4994-a203-f45ab6a674a2",
+      "c0548a44-14d2-4b8f-b202-f17e5426d483",
+      "8a9da9b1-b027-4e5a-8a3a-982283471659",
+      "35499afe-5e48-4015-97dd-c3b0475f44af",
+      "1e77e97b-3203-4d08-94ea-a0dfc402be8d"
+    ],
+    "decorators": [],
+    "options": {},
+    "layout": {
+      "x": 467,
+      "y": 139
+    }
+  },
+  "a6174b63-4086-4994-a203-f45ab6a674a2": {
+    "id": "a6174b63-4086-4994-a203-f45ab6a674a2",
+    "class": "TimeoutJs",
+    "name": "Wait",
+    "asset-pack": "core",
+    "children": [],
+    "decorators": [],
+    "options": {
+      "getTime": [
+        "() => {",
+        "   return 1000;",
+        "}"
+      ]
+    },
+    "layout": {
+      "x": 120,
+      "y": 465
+    },
+    "parent": "825539ba-7bf7-439a-8f2b-65fb5b9afd37"
+  },
+  "c0548a44-14d2-4b8f-b202-f17e5426d483": {
+    "id": "c0548a44-14d2-4b8f-b202-f17e5426d483",
+    "class": "TimeoutJs",
+    "name": "Wait",
+    "asset-pack": "core",
+    "children": [],
+    "decorators": [],
+    "options": {
+      "getTime": [
+        "() => {",
+        "   return 1000;",
+        "}"
+      ]
+    },
+    "layout": {
+      "x": 320,
+      "y": 470
+    },
+    "parent": "825539ba-7bf7-439a-8f2b-65fb5b9afd37"
+  },
+  "8a9da9b1-b027-4e5a-8a3a-982283471659": {
+    "id": "8a9da9b1-b027-4e5a-8a3a-982283471659",
+    "class": "TimeoutJs",
+    "name": "Wait",
+    "asset-pack": "core",
+    "children": [],
+    "decorators": [],
+    "options": {
+      "getTime": [
+        "() => {",
+        "   return 1000;",
+        "}"
+      ]
+    },
+    "layout": {
+      "x": 517,
+      "y": 470
+    },
+    "parent": "825539ba-7bf7-439a-8f2b-65fb5b9afd37"
+  },
+  "35499afe-5e48-4015-97dd-c3b0475f44af": {
+    "id": "35499afe-5e48-4015-97dd-c3b0475f44af",
+    "class": "ExecuteScript",
+    "name": "Set Result",
+    "asset-pack": "core",
+    "children": [],
+    "decorators": [],
+    "options": {
+      "exec": [
+        "() => {",
+        "    result.done = true",
+        "}"
+      ]
+    },
+    "layout": {
+      "x": 725,
+      "y": 467
+    },
+    "parent": "825539ba-7bf7-439a-8f2b-65fb5b9afd37"
+  },
+  "1e77e97b-3203-4d08-94ea-a0dfc402be8d": {
+    "id": "1e77e97b-3203-4d08-94ea-a0dfc402be8d",
+    "class": "Null",
+    "name": "Block",
+    "asset-pack": "core",
+    "children": [],
+    "decorators": [],
+    "options": {},
+    "layout": {
+      "x": 917,
+      "y": 465
+    },
+    "parent": "825539ba-7bf7-439a-8f2b-65fb5b9afd37"
+  },
+  "1fbb6c3d-f4e0-4aba-a842-d8d848aac8ec": {
+    "id": "1fbb6c3d-f4e0-4aba-a842-d8d848aac8ec",
+    "class": "WhileCondition",
+    "name": "1fb: undefined",
+    "asset-pack": "core",
+    "options": {
+      "init": [
+        "() => {",
+        "}"
+      ],
+      "conditional": [
+        "() => {",
+        "  return true;",
+        "}"
+      ]
+    }
+  },
+  "meta": {
+    "version": 1
+  }
+}

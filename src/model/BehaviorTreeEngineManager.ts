@@ -4,6 +4,7 @@ import flowRuntime, {
     FlowExecutor,
     FlowRootFactory,
     Runtime,
+    BehaviorTree,
     GojsLoader,
     State,
     Blackboard,
@@ -55,25 +56,41 @@ export default class BehaviorTreeEngineManager extends EventEmitter {
             }
             if (uri) {
                 console.log(`BehaviorTreeEngineManager: run:`, uri);
-                this._activeBtExecutorToken = this.executeBehaviorTree(uri, step);
-                this._activeBtExecutorToken.complete?.then((status: Status) => {
-                    console.log(`run: done: status:`, Status[status]);
-                });
+                try {
+                    this._activeBtExecutorToken = this.executeBehaviorTree(uri, step);
+                    this._activeBtExecutorToken.complete?.then((status: Status) => {
+                        console.log(`run: done: status:`, Status[status]);
+                    });
+                } catch (e) {
+                    console.log(`BehaviorTreeEngineManager: run: ERROR:`, e);
+                    if (this._activeBtExecutorToken) {
+                        this._activeBtExecutorToken.dispose();
+                    }
+                    this._activeBtExecutorToken = undefined;
+                }
             }
         } else {
-            this._activeBtExecutorToken.btExecutor.proceedToStatus(Status.SUCCEEDED, () => {
-                console.log('DONE.');
-                if (this._activeBtExecutorToken) {
-                    console.log(`tree result:`, this._activeBtExecutorToken.btExecutor.tree.result);
-                    this._activeBtExecutorToken.btExecutor.stop();
-                }
-            });
+            if (this._activeBtExecutorToken.btExecutor) {
+                this._activeBtExecutorToken.btExecutor.proceedToStatus(Status.SUCCEEDED, () => {
+                    console.log('DONE.');
+                    if (this._activeBtExecutorToken) {
+                        console.log(`tree result:`, this._activeBtExecutorToken.btExecutor.tree.result);
+                        this._activeBtExecutorToken.btExecutor.stop();
+                    }
+                });
+            } else {
+                console.log(`BehaviorTreeEngineManager: run: ERROR: btExecutor is undefined`);
+            }
         }
     }
 
     step() {
         if (this._activeBtExecutorToken) {
-            this._activeBtExecutorToken.btExecutor.step();
+            if (this._activeBtExecutorToken.btExecutor) {
+                this._activeBtExecutorToken.btExecutor.step();
+            } else {
+                console.log(`BehaviorTreeEngineManager: step: ERROR: btExecutor is undefined`);
+            }
         } else {
             this.run(true);
         }
@@ -88,14 +105,18 @@ export default class BehaviorTreeEngineManager extends EventEmitter {
         }
     }
 
-    updateBehaviorTreeStatus() {
-        if (this._behaviorTree && this._behaviorTree.map) {
-            const keys: string[] = Object.keys(this._behaviorTree.map);
-            keys.forEach(key => {
-                const component: any = this._behaviorTree.map[key];
-                if (component) {
-                    const currentStatus = component._currentStatus;
-                    (this._appModel?.data as BehaviorTreeData).updateBtNodeStatus(key, currentStatus);
+    updateBehaviorTreeStatus(nodeMap: any, previousStatusMap: any) {
+        // console.log(`updateBehaviorTreeStatus:`, nodeMap, previousStatusMap);
+        if (nodeMap && previousStatusMap) {
+            const btNodeIds = Object.keys(nodeMap);
+            btNodeIds.forEach(btNodeId => {
+                const node = nodeMap[btNodeId];
+                if (node) {
+                    const currentStatus = node._currentStatus;
+                    if (!previousStatusMap[btNodeId]) {
+                        previousStatusMap[btNodeId] = currentStatus;
+                    }
+                    (this._appModel?.data as BehaviorTreeData).updateBtNodeStatus(btNodeId, currentStatus, previousStatusMap);
                 }
             });
         }
@@ -103,6 +124,8 @@ export default class BehaviorTreeEngineManager extends EventEmitter {
 
     executeBehaviorTree(behaviorTreeUri: string, step: boolean = false): BtExecutorAsyncToken<any> {
         const token = new BtExecutorAsyncToken();
+        let previousStatusMap: any = {};
+        let nodeMap: any = {};
         token.complete = new Promise<void>((resolve, reject) => {
 
             const btExecutor: any = {};
@@ -111,7 +134,7 @@ export default class BehaviorTreeEngineManager extends EventEmitter {
                 // console.log(`btExecutor.step`);
                 const status = btExecutor.tree.update();
                 console.log(`btExecutor.step: Status:`, Status[status]);
-                this.updateBehaviorTreeStatus();
+                this.updateBehaviorTreeStatus(nodeMap, previousStatusMap);
             }
 
             btExecutor.proceedToStatus = (targetStatus: string, done: any) => {
@@ -119,7 +142,7 @@ export default class BehaviorTreeEngineManager extends EventEmitter {
                 btExecutor.interval = setInterval(() => {
                     const status = btExecutor.tree.update();
                     // console.log(`btExecutor.proceedToStatus: Status:`, Status[status])
-                    this.updateBehaviorTreeStatus();
+                    this.updateBehaviorTreeStatus(nodeMap, previousStatusMap);
                     if (status === targetStatus) {
                         done();
                     }
@@ -132,6 +155,15 @@ export default class BehaviorTreeEngineManager extends EventEmitter {
             });
             btExecutor.tree = this._behaviorTree;
             console.log(`btExecutor.tree`, btExecutor.tree);
+
+            previousStatusMap = {};
+            nodeMap = BehaviorTree.getNodeMap(btExecutor.tree);
+            const keys = Object.keys(nodeMap);
+            keys.forEach(key => {
+                const node = nodeMap[key];
+                previousStatusMap[node.id] = node._currentStatus;
+                // console.log(node.name, Status[node._currentStatus], Status[previousStatusMap[node.id]]);
+            });
 
             btExecutor.stop = () => {
                 console.log(`btExecutor.stop`);
@@ -159,17 +191,6 @@ export default class BehaviorTreeEngineManager extends EventEmitter {
 
 
             token.btExecutor = btExecutor;
-
-            // token.interval = setInterval(() => {
-            //     executor.update();
-            //     token.emit('update', executor.context.current_activity);
-            //     if (executor.context.current_activity.class === 'Flow.End') {
-            //         clearInterval(token.interval);
-            //         console.log(executor.context.current_activity.activity.class);
-            //         resolve();
-            //     }
-            // }, 10);
-
         });
 
         return token;
@@ -181,17 +202,8 @@ export default class BehaviorTreeEngineManager extends EventEmitter {
         }
         (this._appModel?.data as BehaviorTreeData).resetBtStatus();
 
-        // console.log(Status[status]);
-        // status = token.btExecutor.tree.currentStatus
-        // console.log(Status[status]);
-
-        // let executor = token.btExecutor;
         token.dispose();
-        // if (executor) {
-        //     return executor.stopAndDestroy();
-        // } else {
-        //     return Promise.resolve();
-        // }
+
         this._activeBtExecutorToken = undefined;
         return Promise.resolve();
     }
