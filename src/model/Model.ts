@@ -34,6 +34,9 @@ export type LinkData = {
 
 export default class Model extends EventEmitter {
 
+    public svgWidth: number = 1024;
+    public svgHeight: number = 1024;
+
     private _nodes: any[];
     private _links: any[];
     private _simulation: any;
@@ -150,6 +153,8 @@ export default class Model extends EventEmitter {
             }
             graphData.links.push(newLink);
         }
+        console.log(graphData)
+        this.forceGraphData()
         return newNode;
     }
 
@@ -169,29 +174,57 @@ export default class Model extends EventEmitter {
     }
 
     forceGraphData(): any {
+        this.disposeSimulation()
         this._simulation = d3
-            .forceSimulation(this._nodes)
-            .force("link", d3.forceLink(this._links).id((d: any) => d.id))
-            .force("charge", d3.forceManyBody().strength(-1500))
-            .force('center', d3.forceCenter(1024 / 2, 1024 / 2))
-            .force("x", d3.forceX())
-            .force("y", d3.forceY())
-            // .on('tick', this.ticked)
+            .forceSimulation()
+            .nodes(this._nodes)
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force('center', d3.forceCenter(this.svgWidth / 2, this.svgWidth / 2))
+            .force("link", d3.forceLink(this._links)) // .id((d: any) => d.id))
+            // .force('collision', d3.forceCollide().radius((d: any) => {
+            //     return d.r;
+            // }))
+            .stop()
+            .on("end", () => {
+                console.log('simulation: end');
+                this.ended()
+            })
+            .on('tick', this.ticked)
 
-            // .on("end", () => {
-            //     console.log('forceGraphData: end');
-            //     console.log(this.nodes);
-            // })
-            .stop();
-
-        for (let i=0; i<100; i++) {
+        for (let i = 0; i < 100; i++) {
             this._simulation.tick();
         }
-        this.ticked();
-            
+        this._simulation.on('tick', this.ticked)
+        this.restartSimulation()
+
+    }
+
+    disposeSimulation() {
+        if (this._simulation) {
+            this._simulation.stop()
+            const nodes: any = [];
+            this._simulation.nodes(nodes);
+            this._simulation = undefined
+        }
     }
 
     ticked = () => {
         this.emit('tick');
+    }
+
+    ended() {
+        if (this._simulation) this._simulation.stop();
+        console.log(`ended:`)
+    }
+
+    restartSimulation() {
+        this._simulation.alpha(.5).restart();
+    }
+
+    resetFixedNodes() {
+        this._nodes.forEach(node => {
+            delete node.fx
+            delete node.fy
+        })
     }
 }

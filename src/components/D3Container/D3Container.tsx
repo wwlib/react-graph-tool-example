@@ -1,5 +1,7 @@
-import { useState } from 'react';
-// import useInterval from './useInterval';
+import * as React from 'react';
+// import { useState } from 'react';
+import * as d3Zoom from 'd3-zoom';
+import { select } from 'd3'
 import Node from './Node';
 import Link from './Link';
 import NodeSelector from './NodeSelector';
@@ -12,30 +14,11 @@ export enum SelectorState {
     DRAGGING_NEW_NODE = 'dragging_new_node',
 }
 
-let divWidth: number = 1024;
-let divHeight: number = 1024;
 let activeNodeData: any = null;
 let enteredNodeData: any = null;
 let selectorState: SelectorState = SelectorState.POINTING;
 const pointerCoordinates: any = { x: 0, y: 0 };
-
-// const generateDataset = () => (
-//     Array(10).fill(0).map((value, i) => {
-//         return {
-//             id: i,
-//             x: Math.random() * 800 + 100,
-//             y: Math.random() * 350 + 100,
-//         }
-//     })
-// );
-
-// const onMouseEnter = (event) => {
-//     console.log(event);
-// }
-
-// const onMouseDown = (event) => {
-//     console.log(event);
-// }
+let dragged = false;
 
 // const divToSvgCoords = (x: number, y: number, width: number, height: number): [number, number, number, number] => {
 //     let svgX: number = 0;
@@ -51,14 +34,6 @@ const pointerCoordinates: any = { x: 0, y: 0 };
 //     return [svgX, svgY, svgWidth, svgHeight];
 // }
 
-// const getCoordinates = (event: any) => {
-//     const { top, left } = event.target.getBoundingClientRect();
-//     return {
-//         x: event.clientX - left,
-//         y: event.clientX - parseInt(top, 10),
-//     };
-// }
-
 const getCoordinates = (event: any) => {
     // const { top, left } = event.target.getBoundingClientRect();
     pointerCoordinates.x = event.clientX;
@@ -67,35 +42,56 @@ const getCoordinates = (event: any) => {
 }
 
 const D3Container = ({ width, height, appModel, graphData }) => {
-    divWidth = width;
-    divHeight = height;
-    
+    let divWidth = width;
+    let divHeight = height;
 
-    const [dataset, setDataset] = useState(
+    const [dataset, setDataset] = React.useState(
         graphData
     );
-    const [nodeSelectorData, setNodeSelectorData] = useState(null);
+    const [nodeSelectorData, setNodeSelectorData] = React.useState(null);
 
-    // console.log(dataset);
+    //// d3 zoom - TODO: This will work, but all svg mouse events must be controlled by d3
 
-    // useInterval(() => {
-    //     const newDataset = generateDataset()
-    //     setDataset(newDataset)
-    // }, 2000)
+    //const svgRef = React.createRef(); // https://reactjs.org/docs/refs-and-the-dom.html
+    const svgRef = React.useRef(null); // Using React (Hooks) with D3 – [16] Zoomable Line Chart - https://www.youtube.com/watch?v=dxUyI2wfYSI
+    // https://observablehq.com/@d3/programmatic-zoom
+    // https://www.sanity.io/guides/import-svg-files-in-react
+    // https://www.geeksforgeeks.org/reactjs-finddomnode-method/
+    // https://dev.to/taowen/make-react-svg-component-draggable-2kc
+
+
+
+    // React.useEffect(() => {
+    //     const svg = select(svgRef.current)
+    //     document.body.addEventListener("wheel", e => {
+    //         e.preventDefault();//prevent zoom
+    //     });
+    //     console.log(`D3Contaner: useEffect:`, svg)
+    //     const zoom = d3Zoom.zoom().on("zoom", function (event) {
+    //         // event.preventDefault()
+    //         console.log(`zoom`, event.transform)
+    //         svg.attr("transform", event.transform);
+    //     })
+    //     svg.call(zoom)
+
+    // }, [dataset])
 
     const onDivMouseMove = (event) => {
         const newCoordinates = getCoordinates(event);
+        newCoordinates.x += window.scrollX
+        newCoordinates.y += window.scrollY
         // console.log(`onDivMouseMove: state: ${selectorState}`);
         if (selectorState === SelectorState.POINTING) {
 
         } else if (selectorState === SelectorState.SELECTED) {
             selectorState = SelectorState.DRAGGING;
         } if ((selectorState === SelectorState.DRAGGING || selectorState === SelectorState.DRAGGING_NEW_NODE) && nodeSelectorData) {
-            // console.log(newCoordinates);
             // update the graph dataset here - note: vis a side effect that react won't see
             if (activeNodeData) {
-                activeNodeData.x = newCoordinates.x;
-                activeNodeData.y = newCoordinates.y;
+                activeNodeData.x = activeNodeData.fx = newCoordinates.x;
+                activeNodeData.y = activeNodeData.fy = newCoordinates.y;
+                dragged = true;
+                appModel.restartSimulation()
             }
             // forces a per-event update which also renders the graph dataset
             setNodeSelectorData({
@@ -106,10 +102,14 @@ const D3Container = ({ width, height, appModel, graphData }) => {
         }
     }
 
+    const onTempMouseUp = (event) => {
+        // console.log(`onTempMouseUp:`);
+        appModel.resetFixedNodes();
+        appModel.restartSimulation()
+    }
+
     const onDivMouseUp = (event) => {
-        console.log(`onDivMouseUp:`, selectorState);
-        // setNodeSelectorData(null);
-        // setDataset(dataset);
+        // console.log(`onDivMouseUp:`, selectorState);
         if (selectorState === SelectorState.DRAGGING || selectorState === SelectorState.DRAGGING_NEW_NODE) {
             selectorState = SelectorState.POINTING;
             appModel.keepTemporaryNodesAndLinks();
@@ -123,7 +123,7 @@ const D3Container = ({ width, height, appModel, graphData }) => {
     }
 
     const onNodeMouseEvent = (type, data) => {
-        console.log(`onNodeMouseEvent:`, type, data);
+        // console.log(`onNodeMouseEvent:`, type, data);
         switch (type) {
             case 'enter':
                 if (selectorState != SelectorState.DRAGGING && selectorState != SelectorState.DRAGGING_NEW_NODE) {
@@ -155,12 +155,18 @@ const D3Container = ({ width, height, appModel, graphData }) => {
                     nodeData: data,
                 });
                 activeNodeData = data;
+                dragged = false;
                 selectorState = SelectorState.SELECTED;
                 break;
             case 'up':
-                // setNodeSelectorData(null);
+                activeNodeData = data;
+                // console.log(`onNodeMouseEvent: dragged:`, dragged)
+                if (!dragged && activeNodeData) {
+                    delete activeNodeData.fx;
+                    delete activeNodeData.fy;
+                }
                 selectorState = SelectorState.POINTING;
-                // setDataset(dataset);
+                
                 break;
             case 'out':
                 // if (selectorState != SelectorState.DRAGGING) {
@@ -177,7 +183,7 @@ const D3Container = ({ width, height, appModel, graphData }) => {
     }
 
     const onNodeSelectorMouseEvent = (type, data) => {
-        console.log(`onNodeSelectorMouseEvent:`, type, data);
+        // console.log(`onNodeSelectorMouseEvent:`, type, data);
         switch (type) {
             case 'down':
                 const newNodeData = appModel.addNode(pointerCoordinates, data.nodeData, true);
@@ -187,19 +193,16 @@ const D3Container = ({ width, height, appModel, graphData }) => {
                     nodeData: newNodeData,
                 });
                 activeNodeData = newNodeData; //newNodeData;
-                // setDataset(appModel.data);
-                // console.log(appModel.data);
                 selectorState = SelectorState.DRAGGING_NEW_NODE;
                 break;
         }
     }
 
     const rectCoords: [number, number, number, number] = [140, 140, 40, 40]; //divToSvgCoords(140, 140, 40, 40);
-    // console.log(nodeSelectorData);
     return (
 
         <div id='graphContainer' style={{ width: divWidth, height: divHeight }} onMouseMove={onDivMouseMove} onMouseUp={onDivMouseUp} >
-            <svg viewBox={`0 0 ${width} ${height}`} style={{ border: '1px solid black' }}>
+            <svg ref={svgRef} width={appModel.svgWidth} height={appModel.svgHeight} viewBox={`0 0 ${width} ${height}`} style={{ border: '1px solid black' }}>
                 {dataset.links.map((linkData, i) => {
                     return <Link key={i} data={linkData} onMouseEvent={onLinkMouseEvent} />
                 })}
@@ -209,7 +212,7 @@ const D3Container = ({ width, height, appModel, graphData }) => {
                 <rect x={rectCoords[0]} y={rectCoords[1]} width={rectCoords[2]} height={rectCoords[3]} style={{ border: '1px solid black' }} />
                 <NodeSelector data={nodeSelectorData} onMouseEvent={onNodeSelectorMouseEvent} />
             </svg>
-            <div id='tempBox'></div>
+            <div id='tempBox' onMouseUp={onTempMouseUp}></div>
         </div>
     )
 }

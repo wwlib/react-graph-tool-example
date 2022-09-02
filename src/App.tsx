@@ -30,7 +30,7 @@ export default class App extends React.Component<AppProps, AppState> {
   }
 
   onTick = () => {
-    console.log(`App: tick`);
+    // console.log(`App: tick`);
     this.setState({
       graphData: this.props.appModel.data,
     });
@@ -41,7 +41,7 @@ export default class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <div className="App">
-        <D3Container width={1024} height={1024} appModel={this.props.appModel} graphData={this.state.graphData} />
+        <D3Container width={this.props.appModel.svgWidth} height={this.props.appModel.svgHeight} appModel={this.props.appModel} graphData={this.state.graphData} />
         {/* <AnimatedCircles /> */}
       </div>
     );

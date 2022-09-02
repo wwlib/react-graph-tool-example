@@ -2,7 +2,12 @@
 
 A react graph tool example (starting point).
 
-Tested with node version: v14.17.2
+Tested with node versions: v14.15.0, v14.17.2
+
+### TODO
+- replace mouse movment code with d3 events so d3-zoom will work
+- construct the svg "scene"" with d3 rather than using react components
+    - using react components works - good experiment - but rather stay in d3 world
 
 ## Available Scripts
 
