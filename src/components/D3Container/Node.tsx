@@ -26,7 +26,7 @@ const Node = ({ data, onMouseEvent }) => {
         onMouseEvent('up', data);
     }
 
-    let fill = "#FF756E";
+    let fill = "#DA7194";
     if (data.isTemporary) {
         fill = "none";
     }
@@ -37,7 +37,7 @@ const Node = ({ data, onMouseEvent }) => {
             cy={data.y}
             r="30"
             fill={fill}
-            stroke="#E06760"
+            stroke="#cc3c6c"
             strokeWidth="3px"
             onMouseEnter={onMouseEnter}
             onMouseDown={onMouseDown}

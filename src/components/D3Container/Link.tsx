@@ -32,8 +32,8 @@ const Link = ({ data, onMouseEvent }) => {
             y1={data.source.y}
             x2={data.target.x}
             y2={data.target.y}
-            stroke='dimgrey'
-            strokeWidth={1}
+            stroke='#A0A5AF'
+            strokeWidth={2}
             
             // onMouseEnter={onMouseEnter}
             // onMouseDown={onMouseDown}

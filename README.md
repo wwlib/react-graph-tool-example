@@ -6,8 +6,9 @@ Tested with node versions: v14.15.0, v14.17.2
 
 ### TODO
 - replace mouse movment code with d3 events so d3-zoom will work
-- construct the svg "scene"" with d3 rather than using react components
-    - using react components works - good experiment - but rather stay in d3 world
+- ?? construct the svg "scene"" with d3 rather than using react components
+    - using react components works - good experiment - but rather stay in d3 world?
+    - but it is nice to be able to manage HTML/react components as in the behavior tree example
 
 ## Available Scripts
 
